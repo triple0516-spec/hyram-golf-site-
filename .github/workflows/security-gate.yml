@@ -1,0 +1,49 @@
+name: HYRAM Security Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-security-gate:
+    name: Static security gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Secret exposure gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE --exclude-dir=.git --exclude='*.md' '(sk-[A-Za-z0-9_-]{16,}|rk_[A-Za-z0-9_-]{16,}|pk_live_[A-Za-z0-9_-]{8,}|(api[_-]?key|client[_-]?secret|access[_-]?token)[[:space:]]*[:=][[:space:]]*["'\''"][^"'\'']{8,})' .; then
+            echo "Potential secret detected"; exit 1
+          fi
+          echo "PASS: no matching client-side secrets"
+      - name: Dangerous browser API gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE --include='*.html' --include='*.js' '(eval[[:space:]]*\(|new Function[[:space:]]*\(|document\.write[[:space:]]*\(|\.innerHTML[[:space:]]*=|\.outerHTML[[:space:]]*=)' .; then
+            echo "Dangerous DOM/JS sink detected"; exit 1
+          fi
+          echo "PASS: no blocked DOM/JS sinks"
+      - name: Payment secret client gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE --include='*.html' --include='*.js' '(secretKey|SECRET_KEY|TOSS_SECRET|sk_live|pk_live)' .; then
+            echo "Payment/server secret reference detected in public client"; exit 1
+          fi
+          echo "PASS: no payment secret reference in public client"
+      - name: Security architecture gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f backend/README.md
+          test -f backend/TOSS_PAYMENT_GATE.md
+          test -f backend/LIVE_PAYMENT_RELEASE_GATE.md
+          echo "PASS: backend/payment release gates documented"
