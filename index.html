@@ -39,13 +39,28 @@
 <section class="sec alt"><div class="w"><h2>고객 안내</h2><div class="notice">PG 승인 전에는 사이트에서 카드정보를 입력받거나 결제를 처리하지 않습니다. 실제 결제는 PG 테스트와 운영 심사를 통과한 뒤 활성화합니다.</div></div></section>
 </main><aside id="aiPanel" hidden style="position:fixed;right:18px;bottom:18px;z-index:20;width:min(380px,calc(100% - 36px));background:#f7f5ef;color:#151915;border:1px solid #c9b77f;border-radius:18px;padding:18px;box-shadow:0 18px 60px #0008">
 <div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div><b>HYRAM AI 상담</b><div style="font-size:11px;color:#667066">GPT 연결 준비 중</div></div><button id="aiClose" type="button" aria-label="닫기" style="border:0;background:transparent;font-size:22px;cursor:pointer">×</button></div>
-<p style="font-size:13px">클럽 추천·피팅·레슨·부킹·중고클럽 상담을 위한 AI 상담창입니다.</p>
-<div class="notice" style="color:#555;background:white"><b>현재 상태</b><br>화면 UI는 적용됐지만 GPT 서버 연결 전이라 메시지 전송은 비활성화되어 있습니다. API 키는 사이트 코드에 노출하지 않고 서버에서 안전하게 연결합니다.</div>
-<button type="button" disabled style="width:100%;margin-top:12px;padding:12px;border-radius:999px;border:1px solid #bbb;background:#ddd;color:#777">GPT 상담 연결 준비 중</button>
+<p style="font-size:13px">안녕하세요. HYRAM GOLF AI 상담입니다. 클럽·피팅·레슨·부킹·중고·A/S 중 궁금한 항목을 선택해 주세요.</p>
+<div id="aiQuick" style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+<button type="button" data-ai="클럽 구매">클럽 구매</button><button type="button" data-ai="피팅 · 커스텀">피팅 · 커스텀</button>
+<button type="button" data-ai="레슨 · 부킹">레슨 · 부킹</button><button type="button" data-ai="중고 · 보상판매">중고 · 보상판매</button>
+<button type="button" data-ai="A/S · 보증">A/S · 보증</button><button type="button" data-ai="직원 상담">직원 상담</button></div>
+<div id="aiReply" class="notice" style="color:#555;background:white;margin-top:10px" aria-live="polite">원하시는 메뉴를 누르면 필요한 정보를 안내해 드립니다.</div>
+<a id="aiHuman" class="btn" style="display:none;width:100%;text-align:center;margin-top:10px" href="https://open.kakao.com/o/sFKnP4Qi" target="_blank" rel="noopener">카카오 직원 상담</a>
+<div style="font-size:10px;color:#777;margin-top:9px">AI는 확정되지 않은 재고·가격·예약 가능 여부를 임의로 안내하지 않습니다. 최종 조건은 직원 확인 후 확정됩니다.</div>
 </aside><footer class="footer"><div class="w"><b>HYRAM GOLF · 하람골프</b><p>대표자 김준용 · 사업자등록번호 512-61-00713 · 일반과세자<br>사업장: 부산광역시 사상구 백양대로342번길 17, 207동 1501호 · 대표 연락처: 010-3131-6436<br>통신판매업 신고: 접수 진행 중 (접수번호 20261008-95007881)</p><div class="links"><a href="policies.html#privacy">개인정보처리방침</a><a href="policies.html#terms">이용약관</a><a href="policies.html#refund">교환·환불</a></div><p>© 2026 HYRAM GOLF. All rights reserved.</p></div></footer>
 <script>
 const selectedProduct=sessionStorage.getItem('hyram_product_inquiry');if(selectedProduct){document.getElementById('service').value='클럽 구매';document.getElementById('memo').value='문의 상품: '+selectedProduct+'\\n';sessionStorage.removeItem('hyram_product_inquiry');}
 document.querySelectorAll('.pick').forEach(a=>a.addEventListener('click',()=>{document.getElementById('service').value=a.dataset.service||''}));
 const syncWishDate=()=>{const y=document.getElementById('dateYear'),m=document.getElementById('dateMonth'),d=document.getElementById('dateDay'),out=document.getElementById('date');const max=new Date(Number(y.value),Number(m.value),0).getDate();if(Number(d.value)>max)d.value=String(max).padStart(2,'0');out.value=y.value+'-'+m.value+'-'+d.value;};['dateYear','dateMonth','dateDay'].forEach(id=>document.getElementById(id).addEventListener('change',syncWishDate));syncWishDate();document.getElementById('requestForm').addEventListener('submit',e=>{e.preventDefault();const g=id=>document.getElementById(id).value.trim();const s=[g('service'),g('name'),g('date')||'일정 협의',g('time')||'시간 협의',g('contact'),g('phone'),g('memo')||'요청사항 없음'];document.getElementById('summary').textContent='서비스: '+s[0]+' / 성함: '+s[1]+' / 희망일: '+s[2]+' / 시간: '+s[3]+' / 연락: '+s[4]+' '+s[5]+' / 요청: '+s[6];document.getElementById('done').hidden=false;document.getElementById('done').scrollIntoView({behavior:'smooth'});});
+
+const hyramReplies={
+'클럽 구매':'브랜드·모델·신품/중고·원하는 샤프트와 플렉스를 알려주세요. 아이언은 4~P 또는 5~P 구성, 웨지는 로프트·바운스·그라인드까지 확인해 상담합니다. 재고와 최종 판매가는 직원 확인 후 확정합니다.',
+'피팅 · 커스텀':'현재 사용하는 클럽, 키/스윙 특성, 원하는 구질과 샤프트를 알려주세요. HYRAM CUSTOM과 PREMIUM 옵션을 구분해 상담하며 실제 제작 가능 여부와 비용은 스펙 확인 후 확정합니다.',
+'레슨 · 부킹':'희망 날짜·시간·지역·인원을 알려주세요. 사이트 예약·문의에서 희망 일정을 남길 수 있으며 실제 가능 시간과 골프장 예약은 확인 후 확정합니다.',
+'중고 · 보상판매':'브랜드·모델·연식·샤프트·상태와 구성품을 알려주세요. 매입·보상판매 금액은 실물 상태와 현재 시세 확인 후 안내합니다.',
+'A/S · 보증':'클럽 샤프트의 HYRAM A/S 라벨 관리번호(HG-YYMMDD-순번)를 알려주세요. 신제품은 출고일 기준 1년, 중고는 6개월의 HYRAM 보증 기준으로 출고기록을 확인한 뒤 접수합니다.',
+'직원 상담':'직원에게 바로 연결해 드릴게요. 아래 카카오 직원 상담 버튼을 눌러 문의 내용을 보내주세요.'
+};
+document.querySelectorAll('#aiQuick [data-ai]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.ai;document.getElementById('aiReply').textContent=hyramReplies[k];document.getElementById('aiHuman').style.display='block';}));
 document.getElementById('aiOpen').addEventListener('click',()=>{document.getElementById('aiPanel').hidden=false;});document.getElementById('aiClose').addEventListener('click',()=>{document.getElementById('aiPanel').hidden=true;});
 </script></body></html>
