@@ -4,6 +4,28 @@
   "main": "src/index.mjs",
   "compatibility_date": "2026-10-13",
   "workers_dev": true,
-  "d1_databases": [{"binding": "DB", "database_name": "hyram-golf-identity"}],
-  "ratelimits": [{"name": "RATE_LIMIT", "namespace_id": "1001", "simple": {"limit": 10,"period":60}}]
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "hyram-golf-identity"
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "RATE_LIMIT",
+      "namespace_id": "1001",
+      "simple": {
+        "limit": 10,
+        "period": 60
+      }
+    }
+  ],
+  "secrets": {
+    "required": [
+      "OPENAI_API_KEY",
+      "PORTONE_API_SECRET",
+      "PORTONE_STORE_ID",
+      "PORTONE_CHANNEL_KEY"
+    ]
+  }
 }
