@@ -8,6 +8,8 @@ try{
  for(const width of [375,390,1280]){
   const page=await browser.newPage({viewport:{width,height:812},deviceScaleFactor:1});
   let errors=[];page.on('pageerror',e=>errors.push(e.message));
+  // External identity SDK is simulated only to verify the disabled onboarding UI.
+  await page.route('https://cdn.portone.io/v2/browser-sdk.js',route=>route.fulfill({status:200,contentType:'application/javascript',body:'window.PortOne={};'}));
   for(const filename of ['index.html','catalog.html','policies.html']){
    const resp=await page.goto(base+filename,{waitUntil:'networkidle'});
    if(!resp||!resp.ok())throw Error(filename+' HTTP error');
@@ -28,6 +30,17 @@ try{
    await page.keyboard.press('Escape');
    if(await panel.isVisible())throw Error(filename+' Escape close broken');
    console.log('PASS concierge '+filename+' @'+width);
+  }
+  for(const file of ['login.html','signup.html','verify.html']){
+    const r=await page.goto(base+file,{waitUntil:'networkidle'});
+    if(!r||!r.ok())throw Error(file+' HTTP error');
+    if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error(file+' overflow @'+width);
+    if(file==='verify.html'){
+      if(await page.locator('#verifyStart').isEnabled())throw Error('Phone ID must remain disabled without configured server');
+      if(!((await page.locator('#verifyStatus').textContent())||'').includes('준비 중'))throw Error('Phone ID readiness notice missing');
+    }
+    await page.screenshot({path:path.join('qa/screenshots',width+'-'+file+'.png')});
+    console.log('PASS safe member preview '+file+' @'+width);
   }
   await page.goto(base+'shop.html',{waitUntil:'networkidle'});
   await page.waitForURL(/catalog\.html/,{timeout:9000});
