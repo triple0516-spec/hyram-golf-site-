@@ -5,7 +5,7 @@ if(document.getElementById('hyram-concierge-root'))return;
 var endpoint=typeof window.HYRAM_AI_ENDPOINT==='string'&&/^https:\/\/[a-z0-9.-]+(?:\/|$)/i.test(window.HYRAM_AI_ENDPOINT)?window.HYRAM_AI_ENDPOINT:null;
 var root=document.createElement('div');
 root.id='hyram-concierge-root';
-root.innerHTML='<button type="button" class="hc-launcher" id="hc-launcher" aria-label="HYRAM 상담 도우미 열기" aria-expanded="false" aria-controls="hc-widget"><span class="hc-spark" aria-hidden="true">✦</span>HYRAM 상담하기</button>'
+root.appendChild(document.createRange().createContextualFragment('<button type="button" class="hc-launcher" id="hc-launcher" aria-label="HYRAM 상담 도우미 열기" aria-expanded="false" aria-controls="hc-widget"><span class="hc-spark" aria-hidden="true">✦</span>HYRAM 상담하기</button>'
 +'<section id="hc-widget" class="hc-widget" role="region" aria-label="HYRAM 상담 도우미" hidden>'
 +'<header class="hc-top"><span class="hc-avatar" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="12" width="32" height="26" rx="10" fill="#7B78CD"/><rect x="12" y="16" width="24" height="16" rx="7" fill="#F5F4FF"/><circle cx="19" cy="24" r="2.7" fill="#5958B0"/><circle cx="29" cy="24" r="2.7" fill="#5958B0"/><path d="M20 30 Q24 33 28 30" stroke="#5958B0" stroke-width="2" stroke-linecap="round"/><path d="M24 12V7" stroke="#6563A9" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="6" r="3" fill="#BEADEE"/></svg></span>'
 +'<div class="hc-heading"><strong>HYRAM AI 상담 <span class="hc-mode" id="hc-mode">안내</span></strong><small><span class="hc-dot"></span><span id="hc-mode-text">상담 도우미 · 간단한 질문에 답변해요</span></small></div>'
@@ -17,7 +17,7 @@ root.innerHTML='<button type="button" class="hc-launcher" id="hc-launcher" aria-
 +'<button type="button" data-topic="used">중고클럽 문의</button><button type="button" data-topic="booking">골프장 부킹</button><button type="button" data-topic="member">회원 혜택</button></div>'
 +'<p class="hc-info" id="hc-chat-info">현재는 자동 안내 기능입니다. 실시간 GPT 응답과 예약·결제 확정 기능은 연결 준비 중입니다.</p></div>'
 +'<form id="hc-form" class="hc-composer"><input id="hc-input" name="question" type="text" maxlength="500" autocomplete="off" aria-label="상담 질문" placeholder="궁금한 내용을 입력해 주세요"><button class="hc-send" id="hc-send" type="submit" aria-label="메시지 보내기">➤</button></form>'
-+'<div class="hc-footer">민감한 개인정보를 입력하지 마세요 · 최종 가격·일정은 담당자 확인</div></section>';
++'<div class="hc-footer">민감한 개인정보를 입력하지 마세요 · 최종 가격·일정은 담당자 확인</div></section>'));
 document.body.appendChild(root);
 var button=root.querySelector('#hc-launcher');
 var panel=root.querySelector('#hc-widget');
