@@ -25,9 +25,10 @@ jobs:
       - name: JavaScript and JSON config syntax
         run: |
           node --check backend/worker/src/index.mjs
+          node --check backend/worker/scripts/prepare-deployment.mjs
           node --check chat-widget.js
           node --check verify.js
           node --check runtime-config.js
           node --input-type=module -e "const fs=await import('node:fs'); JSON.parse(fs.readFileSync('backend/worker/wrangler.jsonc','utf8'))"
-      - name: API privacy, origin, identity and GPT tests
-        run: node --test backend/worker/test/index.test.mjs
+      - name: API privacy, origin, identity, GPT and deployment preparation tests
+        run: node --test backend/worker/test/*.test.mjs
