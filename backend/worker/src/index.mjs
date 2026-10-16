@@ -53,7 +53,7 @@ async function start(req,e,origin){
  if(!await limit(req,e,"identity"))return j({error:"RATE_LIMIT"},429,origin);
  let data;try{data=await body(req)}catch{return j({error:"INVALID_BODY"},400,origin)}
  if(data.consent!==true)return j({error:"CONSENT_REQUIRED"},400,origin);
- const id="hyram-iv-"+crypto.randomUUID(),state=crypto.randomUUID()+crypto.randomUUID();
+ const id="hyram"+crypto.randomUUID().replace(/-/g,""),state=crypto.randomUUID()+crypto.randomUUID();
  const ts=Math.floor(Date.now()/1000);
  try{await e.DB.prepare("INSERT INTO verification_attempts (id,state_hash,created_at,used_at) VALUES (?1,?2,?3,NULL)")
  .bind(id,await digest(state),ts).run()}catch{return j({error:"DATABASE_UNAVAILABLE"},503,origin)}
@@ -65,7 +65,7 @@ async function confirm(req,e,origin){
  if(!await limit(req,e,"identity"))return j({error:"RATE_LIMIT"},429,origin);
  let data;try{data=await body(req)}catch{return j({error:"INVALID_BODY"},400,origin)}
  const id=data.identityVerificationId,state=data.state;
- if(typeof id!=="string"||!/^hyram-iv-[0-9a-f-]{36}$/.test(id)||
+ if(typeof id!=="string"||!/^hyram[0-9a-f]{32}$/.test(id)||
  typeof state!=="string"||state.length>140)return j({error:"INVALID_ATTEMPT"},400,origin);
  const now=Math.floor(Date.now()/1000);
  let row;try{row=await e.DB.prepare("SELECT state_hash,created_at,used_at FROM verification_attempts WHERE id=?1").bind(id).first()}
