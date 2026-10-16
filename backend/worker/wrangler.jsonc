@@ -22,10 +22,7 @@
   ],
   "secrets": {
     "required": [
-      "OPENAI_API_KEY",
-      "PORTONE_API_SECRET",
-      "PORTONE_STORE_ID",
-      "PORTONE_CHANNEL_KEY"
+      "OPENAI_API_KEY"
     ]
   }
 }
