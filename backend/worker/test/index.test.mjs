@@ -78,6 +78,8 @@ test("phone identity requires consent, provider VERIFIED, same state, one-time u
   const start=await worker.fetch(req("/api/identity/start",{consent:true}),e);
   assert.equal(start.status,200);
   const issued=await start.json();
+  assert.match(issued.identityVerificationId,/^hyram[0-9a-f]{32}$/);
+  assert.ok(issued.identityVerificationId.length<=40);
   const bad=await worker.fetch(req("/api/identity/confirm",{identityVerificationId:issued.identityVerificationId,state:"wrong"}),e);
   assert.equal(bad.status,403);
   globalThis.fetch=async(url)=>{
