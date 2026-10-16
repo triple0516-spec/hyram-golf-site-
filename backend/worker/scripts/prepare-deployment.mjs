@@ -27,7 +27,7 @@ if (config.d1_databases?.length !== 1 || config.d1_databases[0]?.binding !== 'DB
  console.error('Worker D1 binding is missing or unexpected. No file written.');
  process.exit(4);
 }
-const required = ['OPENAI_API_KEY', 'PORTONE_API_SECRET', 'PORTONE_STORE_ID', 'PORTONE_CHANNEL_KEY'];
+const required = ['OPENAI_API_KEY'];
 if (!required.every(x => config.secrets?.required?.includes(x))) {
  console.error('Required server secret declarations are missing. No file written.');
  process.exit(5);
