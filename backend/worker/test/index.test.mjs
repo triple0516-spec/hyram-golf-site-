@@ -67,7 +67,7 @@ function fakeDb(){
     throw Error("unknown fake query");
    }
   }}
- }};
+ };
 }
 test("phone identity requires consent, provider VERIFIED, same state, one-time use",async()=>{
  const old=globalThis.fetch;
