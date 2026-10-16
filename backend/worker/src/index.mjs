@@ -91,7 +91,7 @@ export default {async fetch(req,e){
  const originValue=req.headers.get("Origin")||"",origin=ALLOWED.has(originValue)?originValue:"";
  const pathname=new URL(req.url).pathname;
  if(req.method==="GET"&&pathname==="/health")
-  return j({status:"ok",chatReady:chatReady(e),identityReady:verifyReady(e)});
+  return j({status:"ok",chatReady:chatReady(e),identityReady:verifyReady(e)},200,origin);
  if(!origin)return j({error:"FORBIDDEN_ORIGIN"},403);
  if(req.method==="OPTIONS")return new Response(null,{status:204,headers:{
  "access-control-allow-origin":origin,"access-control-allow-methods":"GET,POST,OPTIONS",
