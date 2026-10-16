@@ -17,7 +17,7 @@ root.appendChild(document.createRange().createContextualFragment('<button type="
 +'<button type="button" data-topic="used">중고클럽 문의</button><button type="button" data-topic="booking">골프장 부킹</button><button type="button" data-topic="member">회원 혜택</button></div>'
 +'<p class="hc-info" id="hc-chat-info">현재는 자동 안내 기능입니다. 실시간 GPT 응답과 예약·결제 확정 기능은 연결 준비 중입니다.</p></div>'
 +'<form id="hc-form" class="hc-composer"><input id="hc-input" name="question" type="text" maxlength="500" autocomplete="off" aria-label="상담 질문" placeholder="궁금한 내용을 입력해 주세요"><button class="hc-send" id="hc-send" type="submit" aria-label="메시지 보내기">➤</button></form>'
-+'<div class="hc-footer">민감한 개인정보를 입력하지 마세요 · 최종 가격·일정은 담당자 확인</div></section>'));
++'<div class="hc-footer">실시간 AI 이용 시 질문은 외부 AI 처리 서버에 전송됩니다. 민감정보를 입력하지 마세요</div></section>'));
 document.body.appendChild(root);
 var button=root.querySelector('#hc-launcher');
 var panel=root.querySelector('#hc-widget');
@@ -26,7 +26,14 @@ var scroller=root.querySelector('#hc-chat-scroll');
 var form=root.querySelector('#hc-form');
 var input=root.querySelector('#hc-input');
 var send=root.querySelector('#hc-send');
-if(endpoint){root.querySelector('#hc-mode').textContent='AI 연결 설정';root.querySelector('#hc-mode-text').textContent='AI 서버 응답을 확인하며 상담합니다';}
+var conversation=[];
+if(endpoint){
+ var healthUrl=new URL('/health',endpoint).href;
+ fetch(healthUrl,{method:'GET',mode:'cors',cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(health){
+  if(health&&health.chatReady===true){root.querySelector('#hc-mode').textContent='GPT 상담';root.querySelector('#hc-mode-text').textContent='실시간 GPT 응답 연결됨';}
+  else {endpoint=null;root.querySelector('#hc-mode-text').textContent='기본 안내 제공 중';}
+ }).catch(function(){endpoint=null;root.querySelector('#hc-mode-text').textContent='기본 안내 제공 중';});
+}
 var topics={
  club:{title:'클럽 추천',text:'사용 목적(비거리·방향성), 구력, 원하는 클럽 종류와 예산을 알려주시면 상담 방향을 안내할게요. 실제 재고와 가격은 직원이 확인해 드립니다.',url:'catalog.html',label:'클럽 둘러보기'},
  fitting:{title:'맞춤 피팅',text:'탄도·스핀·캐리 기록을 비교하고, 헤드·샤프트·그립 조합을 검토할 수 있어요. 기록은 현재 사용하는 기기의 브라우저에만 보관됩니다.',url:'index.html#reserve',label:'MY FITTING 시작'},
@@ -87,13 +94,15 @@ form.addEventListener('submit',async function(e){
   return;
  }
  send.disabled=true;
- var ctrl=new AbortController(),timer=setTimeout(function(){ctrl.abort()},12000);
+ var ctrl=new AbortController(),timer=setTimeout(function(){ctrl.abort()},20000);
  try{
-  var res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:message}),signal:ctrl.signal,credentials:'omit'});
+  var res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:message,history:conversation.slice(-8)}),signal:ctrl.signal,credentials:'omit'});
   if(!res.ok)throw new Error('AI endpoint unavailable');
   var data=await res.json();
   if(!data||typeof data.answer!=='string'||!data.answer.trim())throw new Error('Empty AI response');
-  append(data.answer.slice(0,2400),'bot');
+  append(data.answer.slice(0,2200),'bot');
+  conversation.push({role:'user',content:message},{role:'assistant',content:data.answer.slice(0,500)});
+  conversation=conversation.slice(-8);
  }catch(err){
   append('현재 실시간 AI 상담에 연결할 수 없어요. 기본 상담 안내로 도와드릴게요.','bot');
   if(fallback){var tt=topics[fallback];append(tt.text,'bot',{url:tt.url,label:tt.label})}
