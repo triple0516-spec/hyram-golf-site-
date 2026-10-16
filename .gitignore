@@ -1,0 +1,10 @@
+# Cloudflare Worker local and deployment-only files
+backend/worker/.dev.vars
+backend/worker/.env
+backend/worker/.env.*
+backend/worker/wrangler.production.jsonc
+backend/worker/.wrangler/
+backend/worker/node_modules/
+backend/worker/.DS_Store
+# Browser QA generated artifacts
+qa/screenshots/
