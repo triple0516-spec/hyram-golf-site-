@@ -34,6 +34,7 @@ try{
     if(!await brand.evaluate(img => img.complete && img.naturalWidth > 0))throw Error('Official H brand icon failed to load');
     if(await page.locator('#expert-hero-title').count()!==1 || await page.locator('#master-fitter').count()!==1)throw Error('Expert landing sections missing');
     if(await page.locator('.expert-account a[href="signup.html"]').count()!==1)throw Error('Signup navigation missing');
+    if(await page.locator('#lesson-pro-title').count()!==1 || await page.locator('a[href="lesson.html"]').count()<1)throw Error('Tour pro lesson section missing');
    }
    if(filename==='index.html'){
     await page.locator('[data-topic="club"]').click();
@@ -74,6 +75,14 @@ try{
   if(await page.locator('#owner-only').isVisible())throw Error('Admin exposed without OWNER session');
   if(!(await page.locator('#admin-status').innerText()).includes('승인된 관리자'))throw Error('Admin rejected state missing');
   console.log('PASS configured public Supabase login UI, rejected email/callback and protected admin @'+width+'px');
+  const lessonPage=await page.goto(base+'lesson.html',{waitUntil:'networkidle'});
+  if(!lessonPage || !lessonPage.ok())throw Error('Tour pro lesson page missing');
+  if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('Lesson page overflow @'+width);
+  if(!(await page.locator('h1').innerText()).includes('박형규'))throw Error('Tour pro headline missing');
+  if(!(await page.locator('.venue address').innerText()).includes('명지국제8로10번길 38'))throw Error('Lesson venue address missing');
+  if(await page.getByText(/선발전.*[0-9]+위/).count())throw Error('Unverified tour rank published');
+  await page.screenshot({path:path.join('qa/screenshots',width+'-lesson.html.png')});
+  console.log('PASS tour professional profile and venue @'+width+'px');
   await page.goto(base+'shop.html',{waitUntil:'networkidle'});
   await page.waitForURL(/catalog\.html/,{timeout:9000});
   if(!await page.locator('.product').count())throw Error('Shop redirect has no products');
