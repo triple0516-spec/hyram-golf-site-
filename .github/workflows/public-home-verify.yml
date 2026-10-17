@@ -38,7 +38,7 @@ jobs:
             fi
             sleep 15
           done
-          for path in /expert-home.css /hyram-mark.svg /signup.html /login.html /catalog.html /auth/client.mjs /auth/callback.html /admin/; do
+          for path in /expert-home.css /hyram-mark.svg /signup.html /login.html /catalog.html /lesson.html /lesson.css /auth/client.mjs /auth/callback.html /admin/; do
             result="$(curl -L --silent --show-error --max-time 25 --output /dev/null --write-out '%{http_code} %{ssl_verify_result}' "https://hyramgolf.kr$path")"
             echo "$path: $result"
             [[ "$result" == "200 0" ]] || exit 1
@@ -62,4 +62,11 @@ jobs:
             fi
             sleep 15
           done
+          lessonfile="$(mktemp)"
+          curl -L --fail --silent --show-error --max-time 25 https://hyramgolf.kr/lesson.html -o "$lessonfile"
+          grep -q '박형규' "$lessonfile"
+          grep -q '명지국제8로10번길 38' "$lessonfile"
+          grep -q '선발전 순위' "$lessonfile"
+          rm -f "$lessonfile"
+          echo 'PASS: verified published pro lesson identity, address, and accurate ranking disclosure'
           printf 'Official host and navigational assets verified via HTTPS.\n'
