@@ -39,9 +39,18 @@ jobs:
             sleep 15
           done
           for path in /expert-home.css /hyram-mark.svg /signup.html /login.html /catalog.html /lesson.html /lesson.css /auth/client.mjs /auth/callback.html /admin/; do
-            result="$(curl -L --silent --show-error --max-time 25 --output /dev/null --write-out '%{http_code} %{ssl_verify_result}' "https://hyramgolf.kr$path")"
-            echo "$path: $result"
-            [[ "$result" == "200 0" ]] || exit 1
+            for attempt in $(seq 1 12); do
+              result="$(curl -L --silent --show-error --max-time 25 --output /dev/null --write-out '%{http_code} %{ssl_verify_result}' "https://hyramgolf.kr$path" || true)"
+              if [[ "$result" == "200 0" ]]; then
+                echo "$path: 200 0"
+                break
+              fi
+              if [[ "$attempt" -eq 12 ]]; then
+                echo "::error::$path not live after 12 attempts: $result"
+                exit 1
+              fi
+              sleep 10
+            done
           done
           cssfile="$(mktemp)"
           curl -L --fail --silent --show-error --max-time 25 https://hyramgolf.kr/expert-home.css -o "$cssfile"
