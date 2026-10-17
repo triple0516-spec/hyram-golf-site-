@@ -23,7 +23,7 @@ jobs:
             html="$(mktemp)"
             status="$(curl -L --silent --show-error --max-time 25 --output "$html" --write-out '%{http_code} %{url_effective} %{ssl_verify_result}' https://hyramgolf.kr/ || true)"
             echo "Attempt $attempt: $status"
-            if [[ "$status" == 200* ]] && grep -q 'id="expert-hero-title"' "$html" && grep -q 'id="master-fitter"' "$html" && grep -q 'href="signup.html"' "$html"; then
+            if [[ "$status" == 200* ]] && grep -q 'id="expert-hero-title"' "$html" && grep -q '클럽보다 먼저,' "$html" && grep -q 'id="master-fitter"' "$html" && grep -q 'href="signup.html"' "$html"; then
               echo "PASS: official homepage serves the new expert design"
               rm -f "$html"
               break
@@ -40,4 +40,8 @@ jobs:
             echo "$path: $result"
             [[ "$result" == "200 0" ]] || exit 1
           done
+          cssfile="$(mktemp)"
+          curl -L --fail --silent --show-error --max-time 25 https://hyramgolf.kr/expert-home.css -o "$cssfile"
+          grep -q 'Compact, image-first mobile' "$cssfile"
+          rm -f "$cssfile"
           printf 'Official host and navigational assets verified via HTTPS.\n'
