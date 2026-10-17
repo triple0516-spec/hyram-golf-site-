@@ -6,6 +6,9 @@ on:
       - 'index.html'
       - 'expert-home.css'
       - 'hyram-mark.svg'
+      - 'auth/**'
+      - 'admin/**'
+      - 'login.html'
       - '.github/workflows/public-home-verify.yml'
   workflow_dispatch:
 permissions:
@@ -35,7 +38,7 @@ jobs:
             fi
             sleep 15
           done
-          for path in /expert-home.css /hyram-mark.svg /signup.html /login.html /catalog.html; do
+          for path in /expert-home.css /hyram-mark.svg /signup.html /login.html /catalog.html /auth/client.mjs /auth/callback.html /admin/; do
             result="$(curl -L --silent --show-error --max-time 25 --output /dev/null --write-out '%{http_code} %{ssl_verify_result}' "https://hyramgolf.kr$path")"
             echo "$path: $result"
             [[ "$result" == "200 0" ]] || exit 1
@@ -44,4 +47,19 @@ jobs:
           curl -L --fail --silent --show-error --max-time 25 https://hyramgolf.kr/expert-home.css -o "$cssfile"
           grep -q 'Compact, image-first mobile' "$cssfile"
           rm -f "$cssfile"
+          for attempt in $(seq 1 12); do
+            configfile="$(mktemp)"
+            config_status="$(curl -L --silent --show-error --max-time 25 --output "$configfile" --write-out '%{http_code} %{ssl_verify_result}' https://hyramgolf.kr/auth/site-config.mjs || true)"
+            if [[ "$config_status" == "200 0" ]] && grep -q 'https://ekjbssnlurwriomgqlgw.supabase.co' "$configfile" && grep -q "export const publishableKey = 'sb_publishable_" "$configfile"; then
+              echo 'PASS: deployed browser auth project configuration verified (no keys logged)'
+              rm -f "$configfile"
+              break
+            fi
+            rm -f "$configfile"
+            if [[ "$attempt" -eq 12 ]]; then
+              echo "::error::Official site auth project configuration did not deploy within 3 minutes"
+              exit 1
+            fi
+            sleep 15
+          done
           printf 'Official host and navigational assets verified via HTTPS.\n'
