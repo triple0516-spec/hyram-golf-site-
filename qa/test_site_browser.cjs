@@ -35,6 +35,8 @@ try{
     if(await page.locator('#expert-hero-title').count()!==1 || await page.locator('#master-fitter').count()!==1)throw Error('Expert landing sections missing');
     if(await page.locator('.expert-account a[href="signup.html"]').count()!==1)throw Error('Signup navigation missing');
     const pic=page.locator('#lesson-pro .lesson-pro-portrait img');
+    await pic.scrollIntoViewIfNeeded();
+    await pic.evaluate(img => img.decode());
     if(!await pic.evaluate(img => img.complete && img.naturalWidth>0))throw Error('Park pro homepage photograph missing @'+width);
     if(!(await page.locator('#lesson-pro .lesson-pro-bio').innerText()).includes('동서대학교 평생교육원 강사'))throw Error('Career details not displayed in expert area');
     if(!await page.locator('#service option[value="레슨"]').count())throw Error('Golf lesson inquiry option absent');
@@ -86,6 +88,8 @@ try{
   if(!(await page.locator('h1').innerText()).includes('박형규'))throw Error('Tour pro headline missing');
   if((await page.locator('#career .career-grid article').count())!==6)throw Error('Pro career history incomplete');
   for(const img of await page.locator('.hero-photo img, .venue-gallery img').all()){
+    await img.scrollIntoViewIfNeeded();
+    await img.evaluate(x=>x.decode());
     if(!await img.evaluate(x=>x.complete&&x.naturalWidth>0))throw Error('Lesson pro/venue photo failed to load');
   }
   await page.screenshot({path:path.join('qa/screenshots',width+'-lesson-photos.png'),fullPage:true});
