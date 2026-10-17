@@ -48,7 +48,7 @@ try{
   }
   // Auth routes must fail closed until a real Supabase project is configured.
   await page.goto(base+'login.html',{waitUntil:'networkidle'});
-  if(!await page.locator('#owner-login fieldset').isDisabled())throw Error('Unconfigured owner login is enabled');
+  if(await page.locator('#owner-email').isEnabled() || await page.locator('#owner-submit').isEnabled())throw Error('Unconfigured owner login controls are enabled');
   if(!(await page.locator('#auth-status').innerText()).includes('연결 준비 중'))throw Error('Missing safe auth status');
   await page.goto(base+'auth/callback.html',{waitUntil:'networkidle'});
   if(!(await page.locator('#auth-status').innerText()).includes('연결되지'))throw Error('Callback did not fail closed');
