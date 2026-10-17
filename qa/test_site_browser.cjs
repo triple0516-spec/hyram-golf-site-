@@ -100,6 +100,7 @@ try{
   await page.goto(base+'index.html#reserve',{waitUntil:'networkidle'});
   await page.locator('#service').selectOption('레슨');
   if(await page.locator('#service').inputValue()!=='레슨')throw Error('Lesson inquiry option cannot be selected');
+  await page.screenshot({path:path.join('qa/screenshots',width+'-golf-lesson-inquiry.png')});
 
 
   await page.goto(base+'shop.html',{waitUntil:'networkidle'});

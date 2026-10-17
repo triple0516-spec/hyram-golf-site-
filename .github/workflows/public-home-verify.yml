@@ -10,6 +10,9 @@ on:
       - 'admin/**'
       - 'login.html'
       - '.github/workflows/public-home-verify.yml'
+      - 'lesson.html'
+      - 'lesson.css'
+      - 'images/**'
   workflow_dispatch:
 permissions:
   contents: read
@@ -38,7 +41,7 @@ jobs:
             fi
             sleep 15
           done
-          for path in /expert-home.css /hyram-mark.svg /signup.html /login.html /catalog.html /lesson.html /lesson.css /auth/client.mjs /auth/callback.html /admin/; do
+          for path in /expert-home.css /hyram-mark.svg /signup.html /login.html /catalog.html /lesson.html /lesson.css /images/park-hyeonggyu-portrait.webp /images/sg-golf-reception.webp /images/sg-golf-lounge.webp /images/sg-golf-practice-bays.webp /auth/client.mjs /auth/callback.html /admin/; do
             for attempt in $(seq 1 12); do
               result="$(curl -L --silent --show-error --max-time 25 --output /dev/null --write-out '%{http_code} %{ssl_verify_result}' "https://hyramgolf.kr$path" || true)"
               if [[ "$result" == "200 0" ]]; then
