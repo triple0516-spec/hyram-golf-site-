@@ -93,14 +93,15 @@ try{
     if(!await img.evaluate(x=>x.complete&&x.naturalWidth>0))throw Error('Lesson pro/venue photo failed to load');
   }
   await page.screenshot({path:path.join('qa/screenshots',width+'-lesson-photos.png'),fullPage:true});
-  await page.goto(base+'index.html#reserve',{waitUntil:'networkidle'});
-  await page.locator('#service').selectOption('레슨');
-  if(await page.locator('#service').inputValue()!=='레슨')throw Error('Lesson inquiry option cannot be selected');
-
   if(!(await page.locator('.venue address').innerText()).includes('명지국제8로10번길 38'))throw Error('Lesson venue address missing');
   if(await page.getByText(/선발전.*[0-9]+위/).count())throw Error('Unverified tour rank published');
   await page.screenshot({path:path.join('qa/screenshots',width+'-lesson.html.png')});
   console.log('PASS tour professional profile and venue @'+width+'px');
+  await page.goto(base+'index.html#reserve',{waitUntil:'networkidle'});
+  await page.locator('#service').selectOption('레슨');
+  if(await page.locator('#service').inputValue()!=='레슨')throw Error('Lesson inquiry option cannot be selected');
+
+
   await page.goto(base+'shop.html',{waitUntil:'networkidle'});
   await page.waitForURL(/catalog\.html/,{timeout:9000});
   if(!await page.locator('.product').count())throw Error('Shop redirect has no products');
