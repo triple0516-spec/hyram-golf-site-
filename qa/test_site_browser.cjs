@@ -12,6 +12,11 @@ try{
    const resp=await page.goto(base+filename,{waitUntil:'networkidle'});
    if(!resp||!resp.ok())throw Error(filename+' HTTP error');
    if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error(filename+' horizontal overflow at '+width);
+   if(filename==='index.html'){
+    const heroImage=page.locator('.expert-visual img');
+    if(!await heroImage.evaluate(img=>img.complete && img.naturalWidth>0))throw Error('Fitter photo did not load at '+width);
+    await page.screenshot({path:path.join('qa/screenshots',width+'-home-closed.png')});
+   }
    const launch=page.locator('#hc-launcher'),panel=page.locator('#hc-widget');
    if(!await launch.isVisible())throw Error(filename+' launcher missing '+width);
    await launch.click();
