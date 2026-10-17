@@ -13,6 +13,12 @@ try{
    if(!resp||!resp.ok())throw Error(filename+' HTTP error');
    if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error(filename+' horizontal overflow at '+width);
    if(filename==='index.html'){
+    if(width<760){
+      const b=await page.locator('.expert-visual').boundingBox();
+      if(!b || b.y>=520)throw Error('Mobile fitter image is below first-view area at '+width+'px: '+(b?.y??'missing'));
+      const heroText=await page.locator('#expert-hero-title').innerText();
+      if(!heroText.includes('클럽보다 먼저'))throw Error('Compressed hero headline missing');
+    }
     const heroImage=page.locator('.expert-visual img');
     if(!await heroImage.evaluate(img=>img.complete && img.naturalWidth>0))throw Error('Fitter photo did not load at '+width);
     await page.screenshot({path:path.join('qa/screenshots',width+'-home-closed.png')});
