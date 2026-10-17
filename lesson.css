@@ -20,3 +20,6 @@
 .venue-gallery figcaption{padding:10px 12px;color:#ebd8ae;font-size:12px;font-weight:800}
 @media(max-width:790px){.hero-photo{min-height:280px}.hero-photo img{height:300px;min-height:0;object-position:center 25%}.career{padding-top:42px;padding-bottom:47px}.career-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.venue-gallery{grid-template-columns:1fr 1fr}.venue-gallery figure:first-child{grid-column:1/-1}.venue-gallery img{height:155px}.venue-gallery figure:first-child img{height:210px}}
 @media(max-width:400px){.career-grid{grid-template-columns:1fr}.venue-gallery{grid-template-columns:1fr}.venue-gallery figure:first-child{grid-column:auto}.venue-gallery figure:first-child img,.venue-gallery img{height:175px}}
+
+/* Mobile presentation polish after real 375px rendered QA: show pro's face, prevent word splitting. */
+@media(max-width:790px){.hero-photo img{object-position:center top}.hero .lead{font-size:clamp(18px,4.8vw,21px);word-break:keep-all}}
