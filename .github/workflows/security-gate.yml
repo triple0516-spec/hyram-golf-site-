@@ -46,6 +46,10 @@ jobs:
           grep -q 'enable row level security' backend/db/admin_roles.sql
           grep -q 'role = .owner.' backend/db/admin_roles.sql
           grep -q 'NOT ACTIVE' backend/invite_owner.mjs
+      - name: Validate authentication pages and owner-only guards
+        run: |
+          node qa/test_admin_auth_static.cjs
+          for file in auth/*.mjs; do node --check "$file"; done
       - name: Security architecture gate
         shell: bash
         run: |

@@ -46,6 +46,15 @@ try{
    if(await panel.isVisible())throw Error(filename+' Escape close broken');
    console.log('PASS concierge '+filename+' @'+width);
   }
+  // Auth routes must fail closed until a real Supabase project is configured.
+  await page.goto(base+'login.html',{waitUntil:'networkidle'});
+  if(await page.locator('#owner-email').isEnabled() || await page.locator('#owner-submit').isEnabled())throw Error('Unconfigured owner login controls are enabled');
+  if(!(await page.locator('#auth-status').innerText()).includes('연결 준비 중'))throw Error('Missing safe auth status');
+  await page.goto(base+'auth/callback.html',{waitUntil:'networkidle'});
+  if(!(await page.locator('#auth-status').innerText()).includes('연결되지'))throw Error('Callback did not fail closed');
+  await page.goto(base+'admin/',{waitUntil:'networkidle'});
+  if(await page.locator('#owner-only').isVisible())throw Error('Admin exposed without session');
+  console.log('PASS unconfigured admin routes closed @'+width+'px');
   await page.goto(base+'shop.html',{waitUntil:'networkidle'});
   await page.waitForURL(/catalog\.html/,{timeout:9000});
   if(!await page.locator('.product').count())throw Error('Shop redirect has no products');
