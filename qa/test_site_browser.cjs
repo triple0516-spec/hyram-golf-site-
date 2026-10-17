@@ -34,6 +34,11 @@ try{
     if(!await brand.evaluate(img => img.complete && img.naturalWidth > 0))throw Error('Official H brand icon failed to load');
     if(await page.locator('#expert-hero-title').count()!==1 || await page.locator('#master-fitter').count()!==1)throw Error('Expert landing sections missing');
     if(await page.locator('.expert-account a[href="signup.html"]').count()!==1)throw Error('Signup navigation missing');
+    const pic=page.locator('#lesson-pro .lesson-pro-portrait img');
+    if(!await pic.evaluate(img => img.complete && img.naturalWidth>0))throw Error('Park pro homepage photograph missing @'+width);
+    if(!(await page.locator('#lesson-pro .lesson-pro-bio').innerText()).includes('동서대학교 평생교육원 강사'))throw Error('Career details not displayed in expert area');
+    if(!await page.locator('#service option[value="레슨"]').count())throw Error('Golf lesson inquiry option absent');
+    if((await page.locator('#service option[value="레슨"]').innerText()).indexOf('골프 레슨')<0)throw Error('Lesson option customer label unclear');
     if(await page.locator('#lesson-pro-title').count()!==1 || await page.locator('a[href="lesson.html"]').count()<1)throw Error('Tour pro lesson section missing');
    }
    if(filename==='index.html'){
@@ -79,6 +84,15 @@ try{
   if(!lessonPage || !lessonPage.ok())throw Error('Tour pro lesson page missing');
   if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('Lesson page overflow @'+width);
   if(!(await page.locator('h1').innerText()).includes('박형규'))throw Error('Tour pro headline missing');
+  if((await page.locator('#career .career-grid article').count())!==6)throw Error('Pro career history incomplete');
+  for(const img of await page.locator('.hero-photo img, .venue-gallery img').all()){
+    if(!await img.evaluate(x=>x.complete&&x.naturalWidth>0))throw Error('Lesson pro/venue photo failed to load');
+  }
+  await page.screenshot({path:path.join('qa/screenshots',width+'-lesson-photos.png'),fullPage:true});
+  await page.goto(base+'index.html#reserve',{waitUntil:'networkidle'});
+  await page.locator('#service').selectOption('레슨');
+  if(await page.locator('#service').inputValue()!=='레슨')throw Error('Lesson inquiry option cannot be selected');
+
   if(!(await page.locator('.venue address').innerText()).includes('명지국제8로10번길 38'))throw Error('Lesson venue address missing');
   if(await page.getByText(/선발전.*[0-9]+위/).count())throw Error('Unverified tour rank published');
   await page.screenshot({path:path.join('qa/screenshots',width+'-lesson.html.png')});
