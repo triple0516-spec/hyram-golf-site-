@@ -39,6 +39,13 @@ jobs:
             echo "Payment/server secret reference detected in public client"; exit 1
           fi
           echo "PASS: no payment secret reference in public client"
+      - name: Validate owner invite script and role gates
+        run: |
+          node --check backend/invite_owner.mjs
+          node backend/invite_owner.mjs | grep -q 'DRY RUN ONLY'
+          grep -q 'enable row level security' backend/db/admin_roles.sql
+          grep -q 'role = .owner.' backend/db/admin_roles.sql
+          grep -q 'NOT ACTIVE' backend/invite_owner.mjs
       - name: Security architecture gate
         shell: bash
         run: |
