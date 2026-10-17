@@ -1,0 +1,43 @@
+name: HYRAM Public Homepage Verification
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'expert-home.css'
+      - 'hyram-mark.svg'
+      - '.github/workflows/public-home-verify.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-public-domain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify HTTPS, new homepage and customer navigation
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 12); do
+            html="$(mktemp)"
+            status="$(curl -L --silent --show-error --max-time 25 --output "$html" --write-out '%{http_code} %{url_effective} %{ssl_verify_result}' https://hyramgolf.kr/ || true)"
+            echo "Attempt $attempt: $status"
+            if [[ "$status" == 200* ]] && grep -q 'id="expert-hero-title"' "$html" && grep -q 'id="master-fitter"' "$html" && grep -q 'href="signup.html"' "$html"; then
+              echo "PASS: official homepage serves the new expert design"
+              rm -f "$html"
+              break
+            fi
+            rm -f "$html"
+            if [[ "$attempt" -eq 12 ]]; then
+              echo "::error::Official domain has not published expert homepage within 3 minutes"
+              exit 1
+            fi
+            sleep 15
+          done
+          for path in /expert-home.css /hyram-mark.svg /signup.html /login.html /catalog.html; do
+            result="$(curl -L --silent --show-error --max-time 25 --output /dev/null --write-out '%{http_code} %{ssl_verify_result}' "https://hyramgolf.kr$path")"
+            echo "$path: $result"
+            [[ "$result" == "200 0" ]] || exit 1
+          done
+          printf 'Official host and navigational assets verified via HTTPS.\n'
