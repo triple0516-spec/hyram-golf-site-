@@ -12,12 +12,23 @@ try{
    const resp=await page.goto(base+filename,{waitUntil:'networkidle'});
    if(!resp||!resp.ok())throw Error(filename+' HTTP error');
    if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error(filename+' horizontal overflow at '+width);
+   if(filename==='index.html'){
+    const heroImage=page.locator('.expert-visual img');
+    if(!await heroImage.evaluate(img=>img.complete && img.naturalWidth>0))throw Error('Fitter photo did not load at '+width);
+    await page.screenshot({path:path.join('qa/screenshots',width+'-home-closed.png')});
+   }
    const launch=page.locator('#hc-launcher'),panel=page.locator('#hc-widget');
    if(!await launch.isVisible())throw Error(filename+' launcher missing '+width);
    await launch.click();
    if(!await panel.isVisible())throw Error(filename+' cannot open chat '+width);
    if(await page.locator('#hc-quick button').count()!==6)throw Error('six guided topics missing');
    await page.screenshot({path:path.join('qa/screenshots',width+'-'+filename+'.png')});
+   if(filename==='index.html'){
+    const brand=page.locator('.site-brand-mark');
+    if(!await brand.evaluate(img => img.complete && img.naturalWidth > 0))throw Error('Official H brand icon failed to load');
+    if(await page.locator('#expert-hero-title').count()!==1 || await page.locator('#master-fitter').count()!==1)throw Error('Expert landing sections missing');
+    if(await page.locator('.expert-account a[href="signup.html"]').count()!==1)throw Error('Signup navigation missing');
+   }
    if(filename==='index.html'){
     await page.locator('[data-topic="club"]').click();
     if(!await page.locator('#hc-chat-scroll a[href="catalog.html"]').last().isVisible())throw Error('club guidance catalog link missing');
