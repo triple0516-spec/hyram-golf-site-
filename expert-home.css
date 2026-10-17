@@ -103,3 +103,31 @@ body .hc-launcher{bottom:25px}
   .expert-actions .expert-btn{font-size:11px}
 }
 @media(prefers-reduced-motion:reduce){.expert-services .quick a{transition:none}}
+
+/* HYRAM TOUR PRO - complementary lesson specialist section */
+.lesson-pro{background:linear-gradient(125deg,#153526,#214331);color:#fff;padding:60px 0}
+.lesson-pro-layout{display:grid;grid-template-columns:1.15fr .85fr;gap:35px;align-items:center}
+.lesson-pro-copy{max-width:650px}.lesson-pro-kicker{display:block;color:#d8c18a;letter-spacing:.14em;font-weight:900;font-size:11px}
+.lesson-pro h2{font-family:Georgia,"Noto Serif KR",serif;font-size:clamp(30px,4vw,48px);margin:14px 0 8px}
+.lesson-pro h2 em{font-style:normal;color:#dfc48e}
+.lesson-pro p{font-size:14px;line-height:1.8;color:#d6e6dc}
+.lesson-pro p.lesson-pro-sub{font-size:18px;font-weight:800;color:#fff;line-height:1.5}
+.lesson-pro-tags{display:flex;flex-wrap:wrap;gap:7px;margin:20px 0}
+.lesson-pro-tags span{border:1px solid #849b8a;border-radius:999px;padding:6px 11px;color:#edf0e8;font-size:11px}
+.lesson-pro .lesson-pro-place{display:grid;gap:4px;padding:16px 17px;border-left:3px solid #d6bd86;background:#ffffff0b;font-size:13px}
+.lesson-pro-place strong{color:#f4dfaf}
+.lesson-pro-actions{display:flex;flex-wrap:wrap;gap:9px;margin:22px 0}
+.lesson-pro-actions a{display:inline-flex;align-items:center;justify-content:center;padding:11px 15px;min-height:45px;border-radius:9px;text-align:center;font-weight:900;font-size:13px}
+.lesson-pro-main{background:#f1e6cb;color:#1b3a2a}
+.lesson-pro-secondary{color:#fff;border:1px solid #b1c4b4}
+.lesson-pro small{color:#b3c6b9;font-size:11px;line-height:1.65;display:block}
+.lesson-pro-visual{border:1px solid #789780;border-radius:18px;overflow:hidden;min-height:380px;display:flex;flex-direction:column;background:linear-gradient(150deg,#335a40 0%,#193324 72%);box-shadow:0 18px 40px #06170b3d}
+.lesson-pro-visual-top,.lesson-pro-visual-bottom{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:17px;color:#dfc794;letter-spacing:.15em;font-size:10px;font-weight:900}
+.lesson-pro-visual-top span{font-size:9px;color:#bbd2be}
+.lesson-pro-visual-body{flex:1;padding:30px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;background:radial-gradient(circle at 83% 20%,#e2b65c30,transparent 52%)}
+.lesson-pro-visual-body span{color:#e5cc8e;letter-spacing:.2em;font-weight:900;font-size:10px}
+.lesson-pro-visual-body strong{font:700 clamp(37px,4vw,54px)/1.03 Georgia,serif;letter-spacing:.045em;margin:17px 0;color:#f7f1dc}
+.lesson-pro-visual-body p{font-size:12px;letter-spacing:.18em}
+.lesson-pro-visual-bottom{border-top:1px solid #73987b}
+@media(max-width:800px){.lesson-pro-layout{grid-template-columns:1fr}.lesson-pro{padding:42px 0}.lesson-pro-visual{min-height:250px}.lesson-pro-visual-body{padding:19px}.lesson-pro-visual-body strong{font-size:39px}}
+@media(max-width:390px){.lesson-pro-actions{display:grid;grid-template-columns:1fr}.lesson-pro-tags span{font-size:10px}.lesson-pro-visual{min-height:230px}}
