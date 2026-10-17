@@ -1,0 +1,28 @@
+name: HYRAM Supabase Public Auth Reachability
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'qa/probe_supabase_public.mjs'
+      - 'auth/site-config.mjs'
+      - '.github/workflows/supabase-public-probe.yml'
+  pull_request:
+    paths:
+      - 'qa/probe_supabase_public.mjs'
+      - 'auth/site-config.mjs'
+      - '.github/workflows/supabase-public-probe.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-auth-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check qa/probe_supabase_public.mjs
+      - name: Probe only public Supabase endpoints; do not reveal credentials
+        run: node qa/probe_supabase_public.mjs
