@@ -46,15 +46,34 @@ try{
    if(await panel.isVisible())throw Error(filename+' Escape close broken');
    console.log('PASS concierge '+filename+' @'+width);
   }
-  // Auth routes must fail closed until a real Supabase project is configured.
+  // Stub the SDK: browser QA must never email an actual person or assume an
+  // owner account exists. These tests prove public config and fail-closed UI.
+  await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/+esm',route=>route.fulfill({
+    status:200,
+    contentType:'text/javascript',
+    headers:{'access-control-allow-origin':'*'},
+    body:`export function createClient(){return {
+      auth:{
+        getUser:async()=>({data:{user:null},error:{message:'no session'}}),
+        getSession:async()=>({data:{session:null},error:null}),
+        signInWithOtp:async()=>({error:new Error('Synthetic blocked email')}),
+        signOut:async()=>({error:null})
+      },
+      rpc:async()=>({data:false,error:null})
+    }}`
+  }));
   await page.goto(base+'login.html',{waitUntil:'networkidle'});
-  if(await page.locator('#owner-email').isEnabled() || await page.locator('#owner-submit').isEnabled())throw Error('Unconfigured owner login controls are enabled');
-  if(!(await page.locator('#auth-status').innerText()).includes('연결 준비 중'))throw Error('Missing safe auth status');
+  if(!await page.locator('#owner-email').isEnabled() || !await page.locator('#owner-submit').isEnabled())throw Error('Configured login controls not enabled');
+  if(!(await page.locator('#auth-status').innerText()).includes('1회용 로그인 링크'))throw Error('Connected auth UI status missing');
+  await page.locator('#owner-email').fill('qa@example.invalid');
+  await page.locator('#owner-submit').click();
+  if(!(await page.locator('#auth-status').innerText()).includes('발송하지 못했습니다'))throw Error('Missing safe email error state');
   await page.goto(base+'auth/callback.html',{waitUntil:'networkidle'});
-  if(!(await page.locator('#auth-status').innerText()).includes('연결되지'))throw Error('Callback did not fail closed');
+  if(!(await page.locator('#auth-status').innerText()).includes('완료할 수 없습니다'))throw Error('Anonymous callback was not rejected');
   await page.goto(base+'admin/',{waitUntil:'networkidle'});
-  if(await page.locator('#owner-only').isVisible())throw Error('Admin exposed without session');
-  console.log('PASS unconfigured admin routes closed @'+width+'px');
+  if(await page.locator('#owner-only').isVisible())throw Error('Admin exposed without OWNER session');
+  if(!(await page.locator('#admin-status').innerText()).includes('승인된 관리자'))throw Error('Admin rejected state missing');
+  console.log('PASS configured public Supabase login UI, rejected email/callback and protected admin @'+width+'px');
   await page.goto(base+'shop.html',{waitUntil:'networkidle'});
   await page.waitForURL(/catalog\.html/,{timeout:9000});
   if(!await page.locator('.product').count())throw Error('Shop redirect has no products');

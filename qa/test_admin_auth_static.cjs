@@ -2,8 +2,10 @@
 const fs=require('node:fs');
 const assert=require('node:assert/strict');
 const f=path=>fs.readFileSync(path,'utf8');
-assert(f('auth/site-config.mjs').includes("export const supabaseUrl = '';"));
-assert(f('auth/site-config.mjs').includes("export const publishableKey = '';"));
+const cfg=f('auth/site-config.mjs');
+assert(cfg.includes("https://ekjbssnlurwriomgqlgw.supabase.co"),'Project URL must match provided project ref');
+assert(/export const publishableKey = 'sb_publishable_[a-zA-Z0-9_-]+'/m.test(cfg),'Public key must use publishable prefix');
+assert(!/sb_secret_|service_role|SUPABASE_SERVICE_ROLE_KEY\s*=/.test(cfg),'Service secrets may not appear in browser config');
 assert(f('auth/client.mjs').includes("client.rpc('hyram_is_owner')"));
 assert(f('auth/login.mjs').includes('shouldCreateUser:false'));
 assert(!f('auth/login.mjs').includes('signUp('));
@@ -15,4 +17,4 @@ for(const name of ['auth/client.mjs','auth/login.mjs','auth/admin.mjs','auth/cal
   assert(!f(name).includes('SUPABASE_SECRET_KEY'),name);
   assert(!f(name).includes('SERVICE_ROLE_KEY'),name);
 }
-console.log('PASS: admin route guarded and credentials intentionally unconfigured');
+console.log('PASS: public Supabase config, owner guards, and no embedded server secrets');

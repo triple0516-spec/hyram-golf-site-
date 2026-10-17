@@ -1,7 +1,7 @@
 # HYRAM 관리자 인증 연동 — 운영자 작업
 
 ## 현재 상태
-- 홈페이지 로그인/콜백/관리자 셸: 소스 코드 준비됨. Supabase 설정은 의도적으로 비어 있음.
+- 홈페이지 로그인/콜백/관리자 셸: 소스 코드 및 웹용 공개 Supabase 프로젝트 URL/Publishable Key 연결 완료. 실제 프로젝트 인증 설정 및 OWNER 권한은 별도 미확인.
 - 고객 회원가입: 준비 중(별도 설계 필요). 관리자 계정 한 명만 우선.
 - 실제 계정 생성, 메일 발송, 운영 DB 연결: **완료되지 않음**.
 
@@ -13,7 +13,7 @@
 5. Authentication → Users에서 실제 OWNER 이메일 계정으로 **Send invitation**을 실행합니다. 이메일 초대와 사용자 식별자가 생성됩니다. 이 작업 전 Auth callback이 작동하도록 먼저 아래 2번 설정을 완료합니다.
 
 ## 2. 웹사이트 브라우저용 연동
-- Project URL (`https://...supabase.co`)과 브라우저용 Publishable key (`sb_publishable_...`)만 `auth/site-config.mjs`에 설정합니다.
+- 오빠가 제공한 Project Ref와 브라우저용 Publishable key (`sb_publishable_...`)를 `auth/site-config.mjs`에 반영했습니다. 서버로 실제 인증요청이 성공하는지는 아직 별도 검증해야 합니다.
 - **Secret key, service-role key, Database Password, JWT secret은 절대 저장소/HTML/채팅으로 보내지 않습니다.**
 - 새 설정이 반영되면 HTTPS로 `/login.html`, `/auth/callback.html`이 열리고 미인증 상태에서 `/admin/` 내용이 잠기는지 확인합니다.
 - `signInWithOtp`에는 `shouldCreateUser:false`가 설정되어 있어 일반 방문자에게 관리자 계정을 자동 생성하지 않습니다.
