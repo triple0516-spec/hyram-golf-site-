@@ -23,3 +23,15 @@
 
 /* Mobile presentation polish after real 375px rendered QA: show pro's face, prevent word splitting. */
 @media(max-width:790px){.hero-photo img{object-position:center top}.hero .lead{font-size:clamp(18px,4.8vw,21px);word-break:keep-all}}
+
+/* Keep the supplied 310px portrait within its real resolution. */
+.hero-photo{width:100%;min-height:0;align-items:center;padding:24px 24px 0;background:linear-gradient(145deg,#e6e9df,#cbd4c6);box-shadow:0 16px 40px #1b342718}
+.hero-photo img{width:min(100%,240px);height:auto;min-height:0;max-height:none;object-fit:contain;border-radius:8px 8px 0 0}
+.hero-photo-caption{position:static;width:100%;padding:20px 0 24px;background:none;text-align:center}
+.hero-photo-caption span{color:#586b50}.hero-photo-caption strong{color:#183a2a}
+.lesson-plan{padding-top:56px}.lesson-plan h2{font-size:30px;line-height:1.3;letter-spacing:-.04em}
+.plan-card{display:grid;grid-template-columns:.8fr 1.2fr;gap:36px;background:#fffdf7;border:1px solid #d7ddce;border-radius:18px;padding:32px}
+.plan-label{font-size:13px;color:#69765f}.plan-price{display:block;font-size:46px;line-height:1.3;letter-spacing:-.04em}.plan-price span{font-size:20px;margin-left:4px}
+.plan-card h3{margin-top:0}.plan-card p{font-size:14px}.plan-note{color:#64715c;font-size:12px!important}.plan-policy{display:inline-block;margin:16px 0 0 16px;font-size:13px;min-height:44px;padding:10px 0}
+@media(max-width:790px){.hero-photo{max-width:340px;margin:0 auto;padding-top:20px}.hero-photo img{width:min(100%,220px);height:auto;min-height:0;max-height:none;object-fit:contain}.plan-card{grid-template-columns:1fr;gap:16px;padding:24px}.lesson-plan{padding-top:36px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
