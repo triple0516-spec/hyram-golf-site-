@@ -144,3 +144,6 @@ body .hc-launcher{bottom:25px}
 .lesson-pro-portrait figcaption span{font-size:10px;letter-spacing:.08em;color:#dcd3b6}
 @media(max-width:800px){.lesson-pro-bio{grid-template-columns:1fr 1fr}.lesson-pro-portrait{max-width:400px;width:100%;justify-self:center}.lesson-pro-portrait img{height:440px;min-height:0;object-position:center top}}
 @media(max-width:420px){.lesson-pro-bio{grid-template-columns:1fr}.lesson-pro-portrait img{height:385px}.lesson-pro-portrait{max-width:330px}}
+
+.lesson-pro-portrait{display:flex;flex-direction:column;align-items:center;background:#e8ecdf!important;padding:22px!important}
+.lesson-pro-portrait img{width:min(100%,240px)!important;height:auto!important;max-height:none!important;object-fit:contain!important;border-radius:8px}

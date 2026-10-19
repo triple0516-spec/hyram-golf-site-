@@ -1,0 +1,24 @@
+name: Refund and lesson pages QA
+on:
+  pull_request:
+    paths: ['refund.html', 'lesson.html', 'lesson.css', 'index.html', 'expert-home.css', 'policies.html', 'qa/test_refund_lesson.cjs', '.github/workflows/refund-lesson-qa.yml']
+  push:
+    branches: [main]
+    paths: ['refund.html', 'lesson.html', 'lesson.css', 'index.html', 'expert-home.css', 'policies.html', 'qa/test_refund_lesson.cjs', '.github/workflows/refund-lesson-qa.yml']
+permissions:
+  contents: read
+jobs:
+  pages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/hyram-pages.log 2>&1 &
+          curl -fsS --retry 10 --retry-connrefused --retry-delay 1 http://127.0.0.1:8765/lesson.html >/dev/null
+          node qa/test_refund_lesson.cjs
