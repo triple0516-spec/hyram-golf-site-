@@ -11,7 +11,7 @@ root.appendChild(document.createRange().createContextualFragment('<button type="
 +'<div class="hc-heading"><strong>HYRAM AI 상담 <span class="hc-mode" id="hc-mode">안내</span></strong><small><span class="hc-dot"></span><span id="hc-mode-text">상담 도우미 · 간단한 질문에 답변해요</span></small></div>'
 +'<button id="hc-close" class="hc-close" type="button" aria-label="상담창 닫기">×</button></header>'
 +'<div class="hc-chat-scroll" id="hc-chat-scroll" role="log" aria-live="polite" aria-relevant="additions">'
-+'<div class="hc-message hc-bot">안녕하세요! 👋<br>HYRAM GOLF 상담 도우미입니다.<br>클럽 구매, 피팅, 레슨, 중고클럽, 골프장 부킹 등을 편하게 물어보세요.</div>'
++'<div class="hc-message hc-bot">안녕하세요! 👋<br>HYRAM GOLF 상담 도우미입니다.<br>레슨비·환불·준비물은 여기서 바로 확인하세요. 실제 피팅은 HYRAM 담당자가 직접 상담합니다.</div>'
 +'<div class="hc-quick" id="hc-quick">'
 +'<button type="button" data-topic="club">클럽 추천받기</button><button type="button" data-topic="fitting">피팅 상담하기</button><button type="button" data-topic="lesson">레슨 예약하기</button>'
 +'<button type="button" data-topic="used">중고클럽 문의</button><button type="button" data-topic="booking">골프장 부킹</button><button type="button" data-topic="member">회원 혜택</button></div>'
@@ -29,15 +29,15 @@ var send=root.querySelector('#hc-send');
 if(endpoint){root.querySelector('#hc-mode').textContent='AI 연결 설정';root.querySelector('#hc-mode-text').textContent='AI 서버 응답을 확인하며 상담합니다';}
 var topics={
  club:{title:'클럽 추천',text:'사용 목적(비거리·방향성), 구력, 원하는 클럽 종류와 예산을 알려주시면 상담 방향을 안내할게요. 실제 재고와 가격은 직원이 확인해 드립니다.',url:'catalog.html',label:'클럽 둘러보기'},
- fitting:{title:'맞춤 피팅',text:'탄도·스핀·캐리 기록을 비교하고, 헤드·샤프트·그립 조합을 검토할 수 있어요. 기록은 현재 사용하는 기기의 브라우저에만 보관됩니다.',url:'index.html#reserve',label:'MY FITTING 시작'},
- lesson:{title:'골프 레슨',text:'입문·스윙교정·비거리 향상 중 목표를 정해 상담해 주세요. 희망 지역과 날짜는 담당자가 확인하며 자동 예약 확정은 지원하지 않습니다.',url:'index.html#reserve',label:'레슨 상담 작성'},
+ fitting:{title:'HYRAM 직접 피팅 상담',text:'김준용 마스터 피터가 직접 상담합니다. 지도 경력 7년을 바탕으로 스윙과 장비를 함께 살펴요. 상담은 무료이며 실제 측정·작업 비용은 별도 안내합니다. 사용 클럽, 샤프트, 구질 고민을 준비해 주세요.',url:'index.html?service=fitting#reserve',label:'HYRAM 피팅 직접 문의'},
+ lesson:{title:'골프 레슨',text:'박형규 투어프로 월 레슨은 300,000원, 주 2~3회, 회당 60분이며 연습장 이용료는 별도입니다. 월 총횟수·5주차·보강은 결제 전 확정합니다. 일정은 공식 카카오톡에서 상담하세요. 공개 오픈채팅에는 연락처 등 개인정보를 올리지 마세요.',url:'https://open.kakao.com/o/gaQIRfSi',label:'공식 카카오톡 레슨 상담'},
  used:{title:'중고클럽 · 보상판매',text:'브랜드, 모델, 샤프트, 상태를 확인한 뒤 매입·보상판매 가능 여부를 상담해요. 사진과 최종 감정은 담당자 확인이 필요합니다.',url:'catalog.html',label:'TRADE & CARE 보기'},
- booking:{title:'골프장 · 스크린 부킹',text:'지역, 인원, 희망 날짜와 시간대를 정해 상담할 수 있어요. 실제 예약 가능 여부와 확정은 담당자가 안내합니다.',url:'index.html#consult',label:'부킹 상담 작성'},
+ booking:{title:'골프장 · 스크린 부킹',text:'희망 지역·인원·날짜를 정한 뒤 공식 외부 부킹 서비스에서 티타임을 확인할 수 있어요. HYRAM 내 실시간 티타임 조회나 예약 확정, 키오스크 자동 접수는 아직 연결되지 않았습니다.',url:'index.html#bookingClubs',label:'부킹 상담 작성'},
  member:{title:'회원 혜택',text:'회원제 혜택은 준비 중이에요. 아직 유료 멤버십 결제나 자동 갱신은 제공하지 않습니다. 정식 오픈 시 운영 조건을 안내할 예정입니다.',url:'index.html#membership',label:'회원가입 안내'}
 };
 function append(text,who,link){
  var node=document.createElement('div');node.className='hc-message hc-'+who;node.textContent=text;
- if(link){var wrap=document.createElement('div'),a=document.createElement('a');a.href=link.url;a.textContent=link.label+' →';wrap.appendChild(a);node.appendChild(document.createElement('br'));node.appendChild(wrap);}
+ if(link){var wrap=document.createElement('div'),a=document.createElement('a');a.href=link.url;if(/^https:\/\//.test(link.url)){a.target='_blank';a.rel='noopener noreferrer';}a.textContent=link.label+' →';wrap.appendChild(a);node.appendChild(document.createElement('br'));node.appendChild(wrap);}
  scroller.insertBefore(node,root.querySelector('#hc-chat-info'));
  scroller.scrollTop=scroller.scrollHeight;
 }
@@ -65,7 +65,7 @@ button.addEventListener('click',function(){toggle()});
 close.addEventListener('click',function(){toggle(false)});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!panel.hidden){e.preventDefault();toggle(false)}});
 document.querySelectorAll('[data-hyram-chat-open]').forEach(function(el){
- el.addEventListener('click',function(e){e.preventDefault();toggle(true)});
+ el.addEventListener('click',function(e){e.preventDefault();toggle(true);var topic=el.getAttribute('data-hyram-chat-topic');if(topic)quick(topic)});
 });
 document.querySelectorAll('[data-hyram-chat-product]').forEach(function(el){
  el.addEventListener('click',function(e){
@@ -80,10 +80,13 @@ form.addEventListener('submit',async function(e){
  e.preventDefault();if(send.disabled)return;
  var message=input.value.trim();if(!message)return;
  input.value='';append(message,'user');
+ if(/환불|취소|해지/.test(message)){append('박형규 프로 레슨은 실제 결제액에서 계약 회당 레슨비 × 실제 수강 회차를 차감한 잔액을 반환합니다. 회당 금액은 결제액 ÷ 계약 총횟수로 정하며 별도 위약금은 없습니다. 연습장 이용료는 별도 계약 기준입니다. 법정 권리를 우선합니다.','bot',{url:'refund.html#service',label:'환불 기준 확인'});return;}
+ if(/준비물|뭘.*가져|무엇.*준비/.test(message)){append('피팅 상담은 사용 클럽·샤프트 정보, 구질 고민과 측정 기록이 있으면 준비해 주세요. 레슨은 구력·목표·희망 일정을 알려주세요. 장비 대여와 시설 이용료는 방문 전에 확인합니다.','bot',{url:'lesson.html',label:'레슨 장소와 안내'});return;}
+ if(/연습장.*(이용료|비용|포함)|타석.*(비용|포함)/.test(message)){append('박형규 프로 레슨비 월 300,000원에는 연습장 이용료가 포함되지 않습니다. 시설 이용료는 상담 시 별도로 확인해 주세요.','bot',{url:'lesson.html#lesson-plan',label:'레슨 조건 보기'});return;}
  var fallback=chooseTopic(message);
  if(!endpoint){
   if(fallback){var t=topics[fallback];append(t.text,'bot',{url:t.url,label:t.label})}
-  else append('질문을 확인했어요. 현재 실시간 AI 답변 기능은 준비 중입니다. 클럽·피팅·레슨·중고·부킹·회원 혜택 중 하나를 선택하시거나 직원에게 문의해 주세요.','bot',{url:'https://open.kakao.com/o/gaQIRfSi',label:'카카오 직원 상담'});
+  else append('레슨비, 환불, 준비물, 피팅, 부킹처럼 궁금한 항목을 조금 더 구체적으로 알려주세요. 기본 안내를 먼저 도와드리고 필요한 경우 담당 상담으로 연결합니다.','bot',{url:'https://open.kakao.com/o/gaQIRfSi',label:'카카오 직원 상담'});
   return;
  }
  send.disabled=true;
