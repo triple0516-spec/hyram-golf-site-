@@ -48,7 +48,7 @@ try{
     if(!await page.locator('#hc-chat-scroll a[href="catalog.html"]').last().isVisible())throw Error('club guidance catalog link missing');
     await page.locator('#hc-input').fill('레슨 받고 싶어요');
     await page.locator('#hc-send').click();
-    if(!await page.locator('#hc-chat-scroll a[href="index.html#reserve"]').last().isVisible())throw Error('guided question failed');
+    if(!await page.locator('#hc-chat-scroll a[href="https://open.kakao.com/o/gaQIRfSi"]').last().isVisible())throw Error('guided question failed');
    }
    await page.keyboard.press('Escape');
    if(await panel.isVisible())throw Error(filename+' Escape close broken');
