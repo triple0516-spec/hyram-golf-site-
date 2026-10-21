@@ -1,0 +1,17 @@
+name: Toss test server checks
+on:
+  pull_request:
+    paths: ['supabase/functions/toss-test/**', 'backend/db/test_payments.sql', 'qa/test_payment_server.mjs', 'payment-test.*', '.github/workflows/toss-test-server.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test qa/test_payment_server.mjs
+      - run: node --check payment-test.js
