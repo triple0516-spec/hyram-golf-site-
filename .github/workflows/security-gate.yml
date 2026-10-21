@@ -49,6 +49,7 @@ jobs:
       - name: Validate authentication pages and owner-only guards
         run: |
           node qa/test_admin_auth_static.cjs
+          node --test qa/test_member_auth.cjs
           for file in auth/*.mjs; do node --check "$file"; done
       - name: Security architecture gate
         shell: bash

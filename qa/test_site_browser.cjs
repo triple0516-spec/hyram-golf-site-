@@ -112,6 +112,19 @@ try{
     }}`
   }));
   await page.goto(base+'login.html',{waitUntil:'networkidle'});
+  if(await page.locator('#owner-email').count())throw Error('Customer page exposes owner form');
+  for(const provider of ['kakao','facebook','naver']){
+    await page.locator('[data-provider="'+provider+'"]').click();
+    if(!(await page.locator('#auth-status').innerText()).includes('연결을 준비'))throw Error('Provider readiness not explained');
+    if(!page.url().endsWith('/login.html'))throw Error('Unconfigured provider navigated');
+  }
+  if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('Member login overflow');
+  await page.goto(base+'auth/member-callback.html?error=access_denied',{waitUntil:'networkidle'});
+  if(!(await page.locator('#auth-status').innerText()).includes('완료하지 못했습니다'))throw Error('Denied member callback accepted');
+  if(new URL(page.url()).search)throw Error('OAuth error parameters not cleared');
+  await page.goto(base+'signup.html',{waitUntil:'networkidle'});
+  await page.waitForURL(/\/login\.html$/);
+  await page.goto(base+'owner-login.html',{waitUntil:'networkidle'});
   if(!await page.locator('#owner-email').isEnabled() || !await page.locator('#owner-submit').isEnabled())throw Error('Configured login controls not enabled');
   if(!(await page.locator('#auth-status').innerText()).includes('1회용 로그인 링크'))throw Error('Connected auth UI status missing');
   await page.locator('#owner-email').fill('qa@example.invalid');
