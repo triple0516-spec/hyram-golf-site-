@@ -27,7 +27,7 @@ try{
    if(!await launch.isVisible())throw Error(filename+' launcher missing '+width);
    await launch.click();
    if(!await panel.isVisible())throw Error(filename+' cannot open chat '+width);
-   if(await page.locator('#hc-quick button').count()!==6)throw Error('six guided topics missing');
+   if(await page.locator('#hc-quick button').count()<6 || await page.locator('[data-topic="faq"]').count()!==1)throw Error('guided topics or FAQ entry missing');
    await page.screenshot({path:path.join('qa/screenshots',width+'-'+filename+'.png')});
    if(filename==='index.html'){
     const brand=page.locator('.site-brand-mark');
@@ -54,6 +54,17 @@ try{
    if(await panel.isVisible())throw Error(filename+' Escape close broken');
    console.log('PASS concierge '+filename+' @'+width);
   }
+  const faqResp=await page.goto(base+'faq.html',{waitUntil:'networkidle'});
+  if(!faqResp || !faqResp.ok())throw Error('FAQ page HTTP error @'+width);
+  if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('FAQ horizontal overflow @'+width);
+  if(await page.locator('details.qa').count()!==15)throw Error('FAQ must contain 15 answers');
+  const faq=page.locator('details.qa').first();
+  await faq.locator('summary').click();
+  if(!await faq.evaluate(el=>el.open))throw Error('FAQ accordion did not expand');
+  await page.screenshot({path:path.join('qa/screenshots',width+'-faq-open.png')});
+  await faq.locator('summary').click();
+  if(await faq.evaluate(el=>el.open))throw Error('FAQ accordion did not close');
+  console.log('PASS FAQ 15 answers and toggles @'+width+'px');
   // Stub the SDK: browser QA must never email an actual person or assume an
   // owner account exists. These tests prove public config and fail-closed UI.
   await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/+esm',route=>route.fulfill({
