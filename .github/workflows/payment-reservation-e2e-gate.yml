@@ -1,0 +1,25 @@
+name: HYRAM payment + reservation E2E safety gate
+on:
+  pull_request:
+    paths:
+      - 'qa/verify_payment_reservation_staging.mjs'
+      - 'qa/test_e2e_runner_guard.cjs'
+      - 'backend/REAL_PAYMENT_RESERVATION_E2E_GATE.md'
+      - '.github/workflows/payment-reservation-e2e-gate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check E2E runner JavaScript syntax
+        run: node --check qa/verify_payment_reservation_staging.mjs
+      - name: Prove live payment / booking can never run with missing or production config
+        run: node --test qa/test_e2e_runner_guard.cjs
+      - name: Mark actual PG / DB integration untested until real staging API configured
+        run: echo 'E2E SAFETY GATE PASS only; Toss sandbox payment approval and reservation DB confirmation still BLOCKED pending staging.'
