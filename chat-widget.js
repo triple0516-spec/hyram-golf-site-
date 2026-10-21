@@ -33,7 +33,7 @@ var topics={
  lesson:{title:'골프 레슨',text:'박형규 투어프로 월 레슨은 300,000원, 주 2~3회, 회당 60분이며 연습장 이용료는 별도입니다. 월 총횟수·5주차·보강은 결제 전 확정합니다. 일정은 공식 카카오톡에서 상담하세요. 공개 오픈채팅에는 연락처 등 개인정보를 올리지 마세요.',url:'https://open.kakao.com/o/gaQIRfSi',label:'공식 카카오톡 레슨 상담'},
  used:{title:'중고클럽 · 보상판매',text:'브랜드, 모델, 샤프트, 상태를 확인한 뒤 매입·보상판매 가능 여부를 상담해요. 사진과 최종 감정은 담당자 확인이 필요합니다.',url:'catalog.html',label:'TRADE & CARE 보기'},
  booking:{title:'골프장 · 스크린 부킹',text:'희망 지역·인원·날짜를 정한 뒤 공식 외부 부킹 서비스에서 티타임을 확인할 수 있어요. HYRAM 내 실시간 티타임 조회나 예약 확정, 키오스크 자동 접수는 아직 연결되지 않았습니다.',url:'index.html#bookingClubs',label:'부킹 상담 작성'},
- member:{title:'회원 혜택',text:'회원제 혜택은 베타 사전 신청 단계예요. 아직 유료 멤버십 결제나 자동 갱신은 제공하지 않습니다. 정식 오픈 시 조건과 혜택을 별도 안내합니다.',url:'index.html#membership',label:'멤버십 사전 신청'},
+ member:{title:'회원 혜택',text:'SILVER 월 9,900원(베타), GOLD 월 29,900원(상담 가능), PREMIUM·VIP 요금 문의입니다. 등급별 클럽 할인·정기 점검·레슨 할인·TRADE-IN 우선 혜택이 다릅니다. 현재 사이트는 유료 가입·자동갱신 미연동이며 할인 적용·중복 여부는 담당자에게 확인해 주세요.',url:'index.html#membership',label:'멤버십 사전 신청'},
  faq:{title:'하람골프 자주 묻는 질문',text:'피팅 과정, 레슨비와 환불, 중고클럽, 방문 장소, 결제 및 부킹 안내 등 FAQ 15가지를 모아 두었어요.',url:'faq.html',label:'FAQ 15개 모두 확인'}
 };
 function append(text,who,link){
