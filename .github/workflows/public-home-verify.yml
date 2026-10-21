@@ -4,6 +4,12 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'faq.html'
+      - 'policies.html'
+      - 'catalog.html'
+      - 'chat-widget.js'
+      - 'chat-knowledge.json'
+      - 'pricing/**'
       - 'expert-home.css'
       - 'hyram-mark.svg'
       - 'auth/**'
@@ -19,7 +25,7 @@ permissions:
 jobs:
   verify-public-domain:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 11
     steps:
       - name: Verify HTTPS, new homepage and customer navigation
         shell: bash
@@ -82,3 +88,42 @@ jobs:
           rm -f "$lessonfile"
           echo 'PASS: verified published pro lesson identity, address, and accurate ranking disclosure'
           printf 'Official host and navigational assets verified via HTTPS.\n'
+
+      - name: Verify LIVE membership discounts and knowledge-powered chat on both domains
+        shell: bash
+        run: |
+          set -euo pipefail
+          host="https://hyramgolf.kr"
+          for attempt in $(seq 1 20); do
+            echo "Live release attempt $attempt/20"
+            tmpdir="$(mktemp -d)"
+            ok=1
+            for item in "index.html" "faq.html" "policies.html" "catalog.html" "chat-widget.js" "chat-knowledge.json"; do
+              curl --location --fail --silent --show-error --max-time 20 --retry 1 "$host/$item?release=${GITHUB_SHA}" -o "$tmpdir/$item" || ok=0
+            done
+            if [[ "$ok" == 1 ]] &&
+              grep -Fq '고객에게 더 유리한 한 가지 할인만 적용' "$tmpdir/index.html" &&
+              grep -Fq '중복 할인은 불가합니다' "$tmpdir/faq.html" &&
+              grep -Fq '20% 할인과 등급별 회원 할인' "$tmpdir/policies.html" &&
+              grep -Fq '중복·연속 할인하지 않습니다' "$tmpdir/catalog.html" &&
+              grep -Fq 'chat-knowledge.json' "$tmpdir/chat-widget.js" &&
+              grep -Fq '"id": "membershipdiscount"' "$tmpdir/chat-knowledge.json"; then
+              echo 'PASS: live bare-domain HTTPS renders the new membership rules, FAQ and knowledge base.'
+              rm -rf "$tmpdir"
+              break
+            fi
+            rm -rf "$tmpdir"
+            if [[ "$attempt" == 20 ]]; then
+              echo '::error::Live domain content did not match the validated release.'
+              exit 1
+            fi
+            sleep 10
+          done
+          wwwstatus="$(curl --location --silent --show-error --max-time 25 --output /tmp/hyram-www-public.html --write-out '%{http_code} %{ssl_verify_result}' "https://www.hyramgolf.kr/?release=${GITHUB_SHA}" || true)"
+          if [[ "$wwwstatus" != "200 0" ]]; then
+            echo "::error::www domain HTTPS check did not pass: $wwwstatus"
+            exit 1
+          fi
+          grep -Fq 'id="expert-hero-title"' /tmp/hyram-www-public.html
+          grep -Fq '고객에게 더 유리한 한 가지 할인만 적용' /tmp/hyram-www-public.html
+          echo 'PASS: www HTTPS, release homepage and customer discount policy verified.'

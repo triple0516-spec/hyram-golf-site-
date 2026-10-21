@@ -1,7 +1,7 @@
 name: Refund and lesson pages QA
 on:
   pull_request:
-    paths: ['refund.html', 'lesson.html', 'lesson.css', 'index.html', 'expert-home.css', 'policies.html', 'qa/test_refund_lesson.cjs', '.github/workflows/refund-lesson-qa.yml']
+    paths: ['refund.html', 'lesson.html', 'lesson.css', 'index.html', 'expert-home.css', 'policies.html', 'faq.html', 'qa/test_refund_lesson.cjs', '.github/workflows/refund-lesson-qa.yml']
   push:
     branches: [main]
     paths: ['refund.html', 'lesson.html', 'lesson.css', 'index.html', 'expert-home.css', 'policies.html', 'qa/test_refund_lesson.cjs', '.github/workflows/refund-lesson-qa.yml']
@@ -9,7 +9,7 @@ permissions:
   contents: read
 jobs:
   pages:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4

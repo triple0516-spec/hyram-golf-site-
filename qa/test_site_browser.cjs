@@ -23,11 +23,23 @@ try{
     if(!await heroImage.evaluate(img=>img.complete && img.naturalWidth>0))throw Error('Fitter photo did not load at '+width);
     await page.screenshot({path:path.join('qa/screenshots',width+'-home-closed.png')});
    }
+   if(filename==='index.html'){
+    const memberText=await page.locator('#membership').innerText();
+    if(!memberText.includes('고객에게 더 유리한 한 가지 할인만 적용') || !memberText.includes('모두 800,000원'))throw Error('No-stacking member policy is missing at '+width);
+   }
+   if(filename==='catalog.html'){
+    const catalogText=await page.locator('main').innerText();
+    if(!catalogText.includes('중복·연속 할인하지 않습니다'))throw Error('Catalog member discount rule missing at '+width);
+   }
+   if(filename==='policies.html'){
+    const terms=await page.locator('#terms').innerText();
+    if(!terms.includes('할인율을 합산하거나 이미 할인된 가격에 회원 할인을 추가하지 않습니다'))throw Error('Membership policy legal terms missing at '+width);
+   }
    const launch=page.locator('#hc-launcher'),panel=page.locator('#hc-widget');
    if(!await launch.isVisible())throw Error(filename+' launcher missing '+width);
    await launch.click();
    if(!await panel.isVisible())throw Error(filename+' cannot open chat '+width);
-   if(await page.locator('#hc-quick button').count()!==6)throw Error('six guided topics missing');
+   if(await page.locator('#hc-quick button').count()<6 || await page.locator('[data-topic="faq"]').count()!==1)throw Error('guided topics or FAQ entry missing');
    await page.screenshot({path:path.join('qa/screenshots',width+'-'+filename+'.png')});
    if(filename==='index.html'){
     const brand=page.locator('.site-brand-mark');
@@ -44,6 +56,20 @@ try{
     if(await page.locator('#lesson-pro-title').count()!==1 || await page.locator('a[href="lesson.html"]').count()<1)throw Error('Tour pro lesson section missing');
    }
    if(filename==='index.html'){
+    const knowledgeQuestions=[
+      ['레슨비 얼마예요?','300,000원'],
+      ['회원 할인 20%와 중복되나요?','더 유리한 한 가지만'],
+      ['골프장 실시간 예약 가능한가요?','실시간'],
+      ['중고클럽 보상판매 되나요?','상태'],
+      ['어디로 방문하나요?','명지국제8로10번길 38']
+    ];
+    for(const [question,expected] of knowledgeQuestions){
+      await page.locator('#hc-input').fill(question);
+      const countBefore=await page.locator('#hc-chat-scroll .hc-message.hc-bot').count();
+      await page.locator('#hc-send').click();
+      await page.waitForFunction((count)=>document.querySelectorAll('#hc-chat-scroll .hc-message.hc-bot').length>count,countBefore);
+      if(!(await page.locator('#hc-chat-scroll .hc-message.hc-bot').last().innerText()).includes(expected))throw Error('Knowledge answer mismatch: '+question);
+    }
     await page.locator('[data-topic="club"]').click();
     if(!await page.locator('#hc-chat-scroll a[href="catalog.html"]').last().isVisible())throw Error('club guidance catalog link missing');
     await page.locator('#hc-input').fill('레슨 받고 싶어요');
@@ -54,6 +80,21 @@ try{
    if(await panel.isVisible())throw Error(filename+' Escape close broken');
    console.log('PASS concierge '+filename+' @'+width);
   }
+  const faqResp=await page.goto(base+'faq.html',{waitUntil:'networkidle'});
+  if(!faqResp || !faqResp.ok())throw Error('FAQ page HTTP error @'+width);
+  if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('FAQ horizontal overflow @'+width);
+  if(await page.locator('details.qa').count()!==15)throw Error('FAQ must contain 15 answers');
+  const memberFaq=page.locator('details.qa').nth(5);
+  await memberFaq.locator('summary').click();
+  if(!(await memberFaq.locator('p').innerText()).includes('중복 할인은 불가합니다'))throw Error('FAQ membership discount rule missing');
+  await memberFaq.locator('summary').click();
+  const faq=page.locator('details.qa').first();
+  await faq.locator('summary').click();
+  if(!await faq.evaluate(el=>el.open))throw Error('FAQ accordion did not expand');
+  await page.screenshot({path:path.join('qa/screenshots',width+'-faq-open.png')});
+  await faq.locator('summary').click();
+  if(await faq.evaluate(el=>el.open))throw Error('FAQ accordion did not close');
+  console.log('PASS FAQ 15 answers and toggles @'+width+'px');
   // Stub the SDK: browser QA must never email an actual person or assume an
   // owner account exists. These tests prove public config and fail-closed UI.
   await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/+esm',route=>route.fulfill({
