@@ -70,7 +70,10 @@ try{
   if(!faqResp || !faqResp.ok())throw Error('FAQ page HTTP error @'+width);
   if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('FAQ horizontal overflow @'+width);
   if(await page.locator('details.qa').count()!==15)throw Error('FAQ must contain 15 answers');
-  if(!(await page.locator('details.qa').nth(5).innerText()).includes('중복 할인은 불가합니다'))throw Error('FAQ membership discount rule missing');
+  const memberFaq=page.locator('details.qa').nth(5);
+  await memberFaq.locator('summary').click();
+  if(!(await memberFaq.locator('p').innerText()).includes('중복 할인은 불가합니다'))throw Error('FAQ membership discount rule missing');
+  await memberFaq.locator('summary').click();
   const faq=page.locator('details.qa').first();
   await faq.locator('summary').click();
   if(!await faq.evaluate(el=>el.open))throw Error('FAQ accordion did not expand');
