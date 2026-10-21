@@ -39,3 +39,13 @@
 
 ## Google supplied in follow-up
 Prepared built-in `google` OAuth route. Configure a Google Web OAuth Client in Supabase and register the provider callback above. The supplied HTML contains placeholder keys and nonexistent application POST/callback paths; it is not deployed verbatim. Google uses the same verified customer callback. No separate `/auth/google` endpoint or unverified browser token decoder is introduced.
+
+## Follow-up code review: NAVER and Toss examples
+- NAVER `/v1/nid/me` is a profile endpoint. Require HTTP success, `resultcode === '00'` and a nonempty `response.id`; use `(provider, provider subject)` as identity, not email as automatic account-link proof. Do not accept arbitrary client token claims as a first-party session. Tie OAuth state/code exchange to this app and complete reviewed session issuance.
+- The supplied Google verifier also only verifies a token; `success:true` alone is not a durable authenticated session. Audience is a real configured client ID, never the placeholder.
+- Current deployment is GitHub Pages; pasted Express routes cannot execute in that static hosting. Server deployment and storage remain prerequisites.
+- Toss `/payment/success`: align the browser success redirect and server confirmation POST. Do not approve the query-string amount blindly: authenticate caller, load server order/payment ownership and expected price/currency, compare inputs, and reject invalid/already-paid orders before confirmation.
+- Toss `/payment/cancel`: verify server authorization and order ownership, load the payment key server-side, validate cancellable balance and cancellation reason. Use durable operation identifiers/idempotency and concurrency controls.
+- Both: use server environment secrets, bounded timeout, redacted logging/responses, durable order/payment records and reconciliation for timeout or provider-success/database-failure. Do not blindly retry unknown outcomes. No payment confirmation/cancellation calls were executed.
+- The provided placeholder keys are not operational credentials. These payment examples are reviewed requirements, NOT implemented or deployed routes in this authentication PR.
+- Reference: https://docs.tosspayments.com/reference
