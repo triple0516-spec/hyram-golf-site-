@@ -56,6 +56,20 @@ try{
     if(await page.locator('#lesson-pro-title').count()!==1 || await page.locator('a[href="lesson.html"]').count()<1)throw Error('Tour pro lesson section missing');
    }
    if(filename==='index.html'){
+    const knowledgeQuestions=[
+      ['레슨비 얼마예요?','300,000원'],
+      ['회원 할인 20%와 중복되나요?','더 유리한 한 가지만'],
+      ['골프장 실시간 예약 가능한가요?','실시간'],
+      ['중고클럽 보상판매 되나요?','상태'],
+      ['어디로 방문하나요?','명지국제8로10번길 38']
+    ];
+    for(const [question,expected] of knowledgeQuestions){
+      await page.locator('#hc-input').fill(question);
+      const countBefore=await page.locator('#hc-chat-scroll .hc-message.hc-bot').count();
+      await page.locator('#hc-send').click();
+      await page.waitForFunction((count)=>document.querySelectorAll('#hc-chat-scroll .hc-message.hc-bot').length>count,countBefore);
+      if(!(await page.locator('#hc-chat-scroll .hc-message.hc-bot').last().innerText()).includes(expected))throw Error('Knowledge answer mismatch: '+question);
+    }
     await page.locator('[data-topic="club"]').click();
     if(!await page.locator('#hc-chat-scroll a[href="catalog.html"]').last().isVisible())throw Error('club guidance catalog link missing');
     await page.locator('#hc-input').fill('레슨 받고 싶어요');
