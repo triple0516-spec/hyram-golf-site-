@@ -23,6 +23,18 @@ try{
     if(!await heroImage.evaluate(img=>img.complete && img.naturalWidth>0))throw Error('Fitter photo did not load at '+width);
     await page.screenshot({path:path.join('qa/screenshots',width+'-home-closed.png')});
    }
+   if(filename==='index.html'){
+    const memberText=await page.locator('#membership').innerText();
+    if(!memberText.includes('고객에게 더 유리한 한 가지 할인만 적용') || !memberText.includes('모두 800,000원'))throw Error('No-stacking member policy is missing at '+width);
+   }
+   if(filename==='catalog.html'){
+    const catalogText=await page.locator('main').innerText();
+    if(!catalogText.includes('중복·연속 할인하지 않습니다'))throw Error('Catalog member discount rule missing at '+width);
+   }
+   if(filename==='policies.html'){
+    const terms=await page.locator('#terms').innerText();
+    if(!terms.includes('할인율을 합산하거나 이미 할인된 가격에 회원 할인을 추가하지 않습니다'))throw Error('Membership policy legal terms missing at '+width);
+   }
    const launch=page.locator('#hc-launcher'),panel=page.locator('#hc-widget');
    if(!await launch.isVisible())throw Error(filename+' launcher missing '+width);
    await launch.click();
@@ -58,6 +70,7 @@ try{
   if(!faqResp || !faqResp.ok())throw Error('FAQ page HTTP error @'+width);
   if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('FAQ horizontal overflow @'+width);
   if(await page.locator('details.qa').count()!==15)throw Error('FAQ must contain 15 answers');
+  if(!(await page.locator('details.qa').nth(5).innerText()).includes('중복 할인은 불가합니다'))throw Error('FAQ membership discount rule missing');
   const faq=page.locator('details.qa').first();
   await faq.locator('summary').click();
   if(!await faq.evaluate(el=>el.open))throw Error('FAQ accordion did not expand');
