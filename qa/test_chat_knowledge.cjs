@@ -16,7 +16,7 @@ test('no unsupported live transaction claims',()=>{
  const text=db.entries.map(e=>e.answer).join(' ');
  assert.match(text,/중복/);
  assert.match(text,/20%/);
- assert.match(text,/30[0,]?000/);
+ assert.match(text,/300,?000/);
  assert.match(text,/아직/);
  assert.match(text,/법정 소비자 권리/);
  assert.match(text,/별도/);
