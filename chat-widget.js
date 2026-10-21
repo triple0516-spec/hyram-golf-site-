@@ -14,7 +14,7 @@ root.appendChild(document.createRange().createContextualFragment('<button type="
 +'<div class="hc-message hc-bot">안녕하세요! 👋<br>HYRAM GOLF 상담 도우미입니다.<br>레슨비·환불·준비물은 여기서 바로 확인하세요. 실제 피팅은 HYRAM 담당자가 직접 상담합니다.</div>'
 +'<div class="hc-quick" id="hc-quick">'
 +'<button type="button" data-topic="club">클럽 추천받기</button><button type="button" data-topic="fitting">피팅 상담하기</button><button type="button" data-topic="lesson">레슨 예약하기</button>'
-+'<button type="button" data-topic="used">중고클럽 문의</button><button type="button" data-topic="booking">골프장 부킹</button><button type="button" data-topic="member">회원 혜택</button></div>'
++'<button type="button" data-topic="used">중고클럽 문의</button><button type="button" data-topic="booking">골프장 부킹</button><button type="button" data-topic="member">회원 혜택</button><button type="button" data-topic="faq">자주 묻는 질문</button></div>'
 +'<p class="hc-info" id="hc-chat-info">현재는 자동 안내 기능입니다. 실시간 GPT 응답과 예약·결제 확정 기능은 연결 준비 중입니다.</p></div>'
 +'<form id="hc-form" class="hc-composer"><input id="hc-input" name="question" type="text" maxlength="500" autocomplete="off" aria-label="상담 질문" placeholder="궁금한 내용을 입력해 주세요"><button class="hc-send" id="hc-send" type="submit" aria-label="메시지 보내기">➤</button></form>'
 +'<div class="hc-footer">민감한 개인정보를 입력하지 마세요 · 최종 가격·일정은 담당자 확인</div></section>'));
@@ -33,7 +33,8 @@ var topics={
  lesson:{title:'골프 레슨',text:'박형규 투어프로 월 레슨은 300,000원, 주 2~3회, 회당 60분이며 연습장 이용료는 별도입니다. 월 총횟수·5주차·보강은 결제 전 확정합니다. 일정은 공식 카카오톡에서 상담하세요. 공개 오픈채팅에는 연락처 등 개인정보를 올리지 마세요.',url:'https://open.kakao.com/o/gaQIRfSi',label:'공식 카카오톡 레슨 상담'},
  used:{title:'중고클럽 · 보상판매',text:'브랜드, 모델, 샤프트, 상태를 확인한 뒤 매입·보상판매 가능 여부를 상담해요. 사진과 최종 감정은 담당자 확인이 필요합니다.',url:'catalog.html',label:'TRADE & CARE 보기'},
  booking:{title:'골프장 · 스크린 부킹',text:'희망 지역·인원·날짜를 정한 뒤 공식 외부 부킹 서비스에서 티타임을 확인할 수 있어요. HYRAM 내 실시간 티타임 조회나 예약 확정, 키오스크 자동 접수는 아직 연결되지 않았습니다.',url:'index.html#bookingClubs',label:'부킹 상담 작성'},
- member:{title:'회원 혜택',text:'회원제 혜택은 준비 중이에요. 아직 유료 멤버십 결제나 자동 갱신은 제공하지 않습니다. 정식 오픈 시 운영 조건을 안내할 예정입니다.',url:'index.html#membership',label:'회원가입 안내'}
+ member:{title:'회원 혜택',text:'회원제 혜택은 베타 사전 신청 단계예요. 아직 유료 멤버십 결제나 자동 갱신은 제공하지 않습니다. 정식 오픈 시 조건과 혜택을 별도 안내합니다.',url:'index.html#membership',label:'멤버십 사전 신청'},
+ faq:{title:'하람골프 자주 묻는 질문',text:'피팅 과정, 레슨비와 환불, 중고클럽, 방문 장소, 결제 및 부킹 안내 등 FAQ 15가지를 모아 두었어요.',url:'faq.html',label:'FAQ 15개 모두 확인'}
 };
 function append(text,who,link){
  var node=document.createElement('div');node.className='hc-message hc-'+who;node.textContent=text;
@@ -80,6 +81,10 @@ form.addEventListener('submit',async function(e){
  e.preventDefault();if(send.disabled)return;
  var message=input.value.trim();if(!message)return;
  input.value='';append(message,'user');
+ if(/(운영시간|영업시간|몇시|몇 시|상담시간)/.test(message)){append('상담 접수 안내는 매일 22:00까지입니다. 실제 방문·레슨은 사전 예약제이며 답변 시간은 운영 상황에 따라 달라질 수 있습니다.','bot',{url:'faq.html',label:'방문·운영 안내'});return;}
+ if(/(위치|주소|찾아가|어디에|어디야)/.test(message)){append('레슨 안내 장소는 SG GOLF Field 명지스크린, 부산 강서구 명지국제8로10번길 38 플러스시네마 6층 610호입니다. 사업자등록 주소와는 별도이며 방문 전 일정을 확인해 주세요.','bot',{url:'lesson.html#lesson-place',label:'레슨 장소 확인'});return;}
+ if(/(결제방법|결제는|계좌이체|온라인결제|카드결제)/.test(message)){append('거래 조건 확정 후 계좌이체·현장 결제 가능 방법을 개별 안내합니다. 사이트 온라인 즉시결제는 현재 준비 중이며, 카드정보를 이 채팅창에 입력하지 마세요.','bot',{url:'faq.html',label:'결제 안내 확인'});return;}
+ if(/(자주 묻|faq|질문 목록|전체 안내)/i.test(message)){var ft=topics.faq;append(ft.text,'bot',{url:ft.url,label:ft.label});return;}
  if(/환불|취소|해지/.test(message)){append('박형규 프로 레슨은 실제 결제액에서 계약 회당 레슨비 × 실제 수강 회차를 차감한 잔액을 반환합니다. 회당 금액은 결제액 ÷ 계약 총횟수로 정하며 별도 위약금은 없습니다. 연습장 이용료는 별도 계약 기준입니다. 법정 권리를 우선합니다.','bot',{url:'refund.html#service',label:'환불 기준 확인'});return;}
  if(/준비물|뭘.*가져|무엇.*준비/.test(message)){append('피팅 상담은 사용 클럽·샤프트 정보, 구질 고민과 측정 기록이 있으면 준비해 주세요. 레슨은 구력·목표·희망 일정을 알려주세요. 장비 대여와 시설 이용료는 방문 전에 확인합니다.','bot',{url:'lesson.html',label:'레슨 장소와 안내'});return;}
  if(/연습장.*(이용료|비용|포함)|타석.*(비용|포함)/.test(message)){append('박형규 프로 레슨비 월 300,000원에는 연습장 이용료가 포함되지 않습니다. 시설 이용료는 상담 시 별도로 확인해 주세요.','bot',{url:'lesson.html#lesson-plan',label:'레슨 조건 보기'});return;}
