@@ -6,6 +6,7 @@ on:
       - 'catalog.html'
       - 'shop.html'
       - 'policies.html'
+      - 'faq.html'
       - 'chat-widget.js'
       - 'chat-widget.css'
       - 'qa/**'
@@ -19,7 +20,7 @@ permissions:
   contents: read
 jobs:
   qa:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
