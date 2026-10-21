@@ -113,7 +113,7 @@ try{
   }));
   await page.goto(base+'login.html',{waitUntil:'networkidle'});
   if(await page.locator('#owner-email').count())throw Error('Customer page exposes owner form');
-  for(const provider of ['kakao','facebook','naver']){
+  for(const provider of ['kakao','facebook','google','naver']){
     await page.locator('[data-provider="'+provider+'"]').click();
     if(!(await page.locator('#auth-status').innerText()).includes('연결을 준비'))throw Error('Provider readiness not explained');
     if(!page.url().endsWith('/login.html'))throw Error('Unconfigured provider navigated');

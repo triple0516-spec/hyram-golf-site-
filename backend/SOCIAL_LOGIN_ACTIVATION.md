@@ -8,7 +8,7 @@
 ## Prepared implementation
 - Customer login/signup entry, separate `owner-login.html`, dedicated PKCE customer client/storage, verified-user callback, logout.
 - Existing OWNER client, callback, RPC and database authorization remain separate.
-- All three social release flags remain false. Buttons explain availability; no simulated authentication.
+- All four social release flags remain false. Buttons explain availability; no simulated authentication.
 - Customer OAuth never grants OWNER or a paid membership and does not expose orders or reservations.
 
 ## Required operator configuration
@@ -36,3 +36,6 @@
 - https://supabase.com/docs/guides/auth/social-login/auth-facebook
 - https://supabase.com/docs/guides/auth/custom-oauth-providers
 - https://developers.naver.com/docs/login/overview/overview.md
+
+## Google supplied in follow-up
+Prepared built-in `google` OAuth route. Configure a Google Web OAuth Client in Supabase and register the provider callback above. The supplied HTML contains placeholder keys and nonexistent application POST/callback paths; it is not deployed verbatim. Google uses the same verified customer callback. No separate `/auth/google` endpoint or unverified browser token decoder is introduced.
