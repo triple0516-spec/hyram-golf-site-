@@ -50,6 +50,10 @@ jobs:
         run: |
           node qa/test_admin_auth_static.cjs
           for file in auth/*.mjs; do node --check "$file"; done
+      - name: Validate member authentication and client-side password handling
+        run: |
+          node --check auth/member.mjs
+          node --test qa/test_member_auth_static.cjs
       - name: Security architecture gate
         shell: bash
         run: |
