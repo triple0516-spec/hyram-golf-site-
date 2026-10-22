@@ -12,6 +12,10 @@ on:
       - 'pricing/**'
       - 'chat-widget.css'
       - 'qa/**'
+      - 'auth/**'
+      - 'member-login.html'
+      - 'signup.html'
+      - 'account.html'
       - 'lesson.html'
       - 'lesson.css'
       - 'expert-home.css'
@@ -29,7 +33,10 @@ jobs:
         with:
           node-version: '22'
       - name: Syntax check
-        run: node --check chat-widget.js
+        run: |
+          node --check chat-widget.js
+          node --check auth/member.mjs
+          node --test qa/test_member_auth_static.cjs
       - name: Discount policy unit tests
         run: node --test qa/test_discount_policy.cjs qa/test_chat_knowledge.cjs
       - name: Install Chromium

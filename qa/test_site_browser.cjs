@@ -46,6 +46,7 @@ try{
     if(!await brand.evaluate(img => img.complete && img.naturalWidth > 0))throw Error('Official H brand icon failed to load');
     if(await page.locator('#expert-hero-title').count()!==1 || await page.locator('#master-fitter').count()!==1)throw Error('Expert landing sections missing');
     if(await page.locator('.expert-account a[href="signup.html"]').count()!==1)throw Error('Signup navigation missing');
+    if(await page.locator('.expert-account a[href="member-login.html"]').count()!==1)throw Error('Member login navigation missing');
     const pic=page.locator('#lesson-pro .lesson-pro-portrait img');
     await pic.scrollIntoViewIfNeeded();
     await pic.evaluate(img => img.decode());
@@ -123,6 +124,26 @@ try{
   if(await page.locator('#owner-only').isVisible())throw Error('Admin exposed without OWNER session');
   if(!(await page.locator('#admin-status').innerText()).includes('승인된 관리자'))throw Error('Admin rejected state missing');
   console.log('PASS configured public Supabase login UI, rejected email/callback and protected admin @'+width+'px');
+  // Customer auth pages are visually checked with a stub SDK; real Supabase email delivery must be tested separately.
+  await page.goto(base+'member-login.html',{waitUntil:'networkidle'});
+  if(!await page.locator('#member-email').isEnabled() || !await page.locator('#member-submit').isEnabled())throw Error('Customer login form not ready');
+  if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('Customer login overflow @'+width);
+  await page.screenshot({path:path.join('qa/screenshots',width+'-member-login.png')});
+  await page.goto(base+'signup.html',{waitUntil:'networkidle'});
+  if(!await page.locator('#member-email').isEnabled() || !await page.locator('#member-submit').isEnabled())throw Error('Customer signup form not ready');
+  if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('Customer signup overflow @'+width);
+  await page.locator('#member-email').fill('synthetic@example.invalid');
+  await page.locator('#member-password').fill('test-password-long-enough');
+  await page.locator('#member-password-confirm').fill('different-password-long');
+  await page.locator('#member-consent').check();
+  await page.locator('#member-submit').click();
+  if(!(await page.locator('#member-status').innerText()).includes('일치하지 않습니다'))throw Error('Password mismatch not blocked');
+  await page.screenshot({path:path.join('qa/screenshots',width+'-member-signup.png')});
+  await page.goto(base+'account.html',{waitUntil:'networkidle'});
+  if(await page.locator('#member-private').isVisible())throw Error('Account area visible without authentication');
+  await page.goto(base+'auth/member-callback.html',{waitUntil:'networkidle'});
+  if(!(await page.locator('#member-status').innerText()).includes('완료하지 못했습니다'))throw Error('Anonymous member callback not rejected');
+  console.log('PASS customer auth forms, validation, anonymous account and callback @'+width+'px');
   const lessonPage=await page.goto(base+'lesson.html',{waitUntil:'networkidle'});
   if(!lessonPage || !lessonPage.ok())throw Error('Tour pro lesson page missing');
   if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('Lesson page overflow @'+width);
