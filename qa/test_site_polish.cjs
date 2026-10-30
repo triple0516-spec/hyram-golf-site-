@@ -30,7 +30,7 @@ const assert=require('node:assert/strict');
      await page.locator('#phone').fill('010-0000-0000');
      assert.equal(await page.locator('#phone').inputValue(),'01000000000');
      await page.locator('#privacy').check();
-     await page.locator('button[type=submit]').press('Enter');
+     await page.locator('#requestForm button[type=submit]').press('Enter');
      assert.equal(await page.locator('#done').isVisible(),true);
      await page.locator('#memo').fill('수정된 테스트 초안');
      assert.equal(await page.locator('#done').isVisible(),false);
