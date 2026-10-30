@@ -2,6 +2,11 @@ name: HYRAM Website Concierge and Shop QA
 on:
   pull_request:
     paths:
+      - 'site-polish.css'
+      - 'site-polish.js'
+      - 'robots.txt'
+      - 'sitemap.xml'
+      - '404.html'
       - 'index.html'
       - 'catalog.html'
       - 'shop.html'
@@ -29,7 +34,9 @@ jobs:
         with:
           node-version: '22'
       - name: Syntax check
-        run: node --check chat-widget.js
+        run: |
+          node --check chat-widget.js
+          node --check site-polish.js
       - name: Discount policy unit tests
         run: node --test qa/test_discount_policy.cjs qa/test_chat_knowledge.cjs
       - name: Install Chromium
@@ -41,7 +48,9 @@ jobs:
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/hyram-site.log 2>&1 &
           curl -f --retry 15 --retry-connrefused --retry-delay 1 http://127.0.0.1:8765/
       - name: Mobile and desktop Shop + concierge tests
-        run: node qa/test_site_browser.cjs
+        run: |
+          node qa/test_site_browser.cjs
+          node qa/test_site_polish.cjs
       - name: Upload browser QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
