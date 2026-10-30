@@ -11,7 +11,7 @@ const assert=require('node:assert/strict');
     await page.goto('http://127.0.0.1:8765/'+file,{waitUntil:'networkidle'});
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,file+' overflow @'+width);
     if(file!=='404.html'){
-     assert.equal(await page.locator('#main-content').count(),1);
+     assert.equal(await page.locator(file==='refund.html'?'#main':'#main-content').count(),1);
      assert.equal(await page.locator('link[rel=canonical]').count(),1);
     }
     if(file==='index.html'){
