@@ -3,6 +3,9 @@ on:
   push:
     branches: [main]
     paths:
+      - 'customer-entry.js'
+      - 'customer-entry.css'
+      - 'brand-logo.css'
       - 'index.html'
       - 'faq.html'
       - 'policies.html'
@@ -27,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 11
     steps:
+      - uses: actions/checkout@v4
       - name: Verify HTTPS, new homepage and customer navigation
         shell: bash
         run: |
@@ -127,3 +131,23 @@ jobs:
           grep -Fq 'id="expert-hero-title"' /tmp/hyram-www-public.html
           grep -Fq '고객에게 더 유리한 한 가지 할인만 적용' /tmp/hyram-www-public.html
           echo 'PASS: www HTTPS, release homepage and customer discount policy verified.'
+
+      - name: Verify released Korean logo and consultation assets match source
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 20); do
+            tmpdir="$(mktemp -d)"
+            ok=1
+            for asset in customer-entry.js customer-entry.css brand-logo.css images/hyram-signature-light.svg images/hyram-friendly-mark.svg; do
+              mkdir -p "$tmpdir/$(dirname "$asset")"
+              if ! curl -L --fail --silent --show-error --max-time 20 "https://hyramgolf.kr/$asset?release=${GITHUB_SHA}" -o "$tmpdir/$asset" || ! cmp --silent "$asset" "$tmpdir/$asset"; then ok=0; fi
+            done
+            for hostname in hyramgolf.kr www.hyramgolf.kr; do
+              if ! curl -L --fail --silent --show-error --max-time 20 "https://$hostname/?release=${GITHUB_SHA}" -o "$tmpdir/home.html" || ! grep -Fq 'customer-entry.js?v=20261101' "$tmpdir/home.html" || ! grep -Fq '하람골프 · HYRAM GOLF' "$tmpdir/home.html"; then ok=0; fi
+            done
+            rm -rf "$tmpdir"
+            if [[ "$ok" == 1 ]]; then echo 'PASS: official domains serve reviewed entry UI and byte-matching logo assets'; break; fi
+            if [[ "$attempt" == 20 ]]; then echo '::error::Customer entry and logo release has not reached official domains'; exit 1; fi
+            sleep 10
+          done

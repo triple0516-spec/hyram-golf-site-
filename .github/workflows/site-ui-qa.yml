@@ -2,6 +2,9 @@ name: HYRAM Website Concierge and Shop QA
 on:
   pull_request:
     paths:
+      - 'customer-entry.js'
+      - 'customer-entry.css'
+      - 'brand-logo.css'
       - 'site-polish.css'
       - 'site-polish.js'
       - 'robots.txt'
@@ -37,6 +40,7 @@ jobs:
         run: |
           node --check chat-widget.js
           node --check site-polish.js
+          node --check customer-entry.js
       - name: Discount policy unit tests
         run: node --test qa/test_discount_policy.cjs qa/test_chat_knowledge.cjs
       - name: Install Chromium

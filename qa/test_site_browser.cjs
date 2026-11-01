@@ -14,8 +14,9 @@ try{
    if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error(filename+' horizontal overflow at '+width);
    if(filename==='index.html'){
     if(width<760){
-      const b=await page.locator('.expert-visual').boundingBox();
-      if(!b || b.y>=520)throw Error('Mobile fitter image is below first-view area at '+width+'px: '+(b?.y??'missing'));
+      if(await page.locator('.expert-visual').isVisible())throw Error('Mobile hero must prioritize readable content and service choices');
+      if(await page.locator('.customer-mobile a').count()!==2)throw Error('Mobile customer actions missing');
+      if(await page.locator('.customer-path').count()!==4)throw Error('Four customer entry choices missing');
       const heroText=await page.locator('#expert-hero-title').innerText();
       if(!heroText.includes('클럽보다 먼저'))throw Error('Compressed hero headline missing');
     }
@@ -52,7 +53,7 @@ try{
     if(!await pic.evaluate(img => img.complete && img.naturalWidth>0))throw Error('Park pro homepage photograph missing @'+width);
     if(!(await page.locator('#lesson-pro .lesson-pro-bio').innerText()).includes('동서대학교 평생교육원 강사'))throw Error('Career details not displayed in expert area');
     if(!await page.locator('#service option[value="레슨"]').count())throw Error('Golf lesson inquiry option absent');
-    if((await page.locator('#service option[value="레슨"]').innerText()).indexOf('골프 레슨')<0)throw Error('Lesson option customer label unclear');
+    if((await page.locator('#service option[value="레슨"]').textContent()).indexOf('골프 레슨')<0)throw Error('Lesson option customer label unclear');
     if(await page.locator('#lesson-pro-title').count()!==1 || await page.locator('a[href="lesson.html"]').count()<1)throw Error('Tour pro lesson section missing');
    }
    if(filename==='index.html'){
