@@ -53,7 +53,7 @@ try{
     if(!await pic.evaluate(img => img.complete && img.naturalWidth>0))throw Error('Park pro homepage photograph missing @'+width);
     if(!(await page.locator('#lesson-pro .lesson-pro-bio').innerText()).includes('동서대학교 평생교육원 강사'))throw Error('Career details not displayed in expert area');
     if(!await page.locator('#service option[value="레슨"]').count())throw Error('Golf lesson inquiry option absent');
-    if((await page.locator('#service option[value="레슨"]').innerText()).indexOf('골프 레슨')<0)throw Error('Lesson option customer label unclear');
+    if((await page.locator('#service option[value="레슨"]').textContent()).indexOf('골프 레슨')<0)throw Error('Lesson option customer label unclear');
     if(await page.locator('#lesson-pro-title').count()!==1 || await page.locator('a[href="lesson.html"]').count()<1)throw Error('Tour pro lesson section missing');
    }
    if(filename==='index.html'){
