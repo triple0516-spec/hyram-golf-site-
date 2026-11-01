@@ -1,0 +1,7 @@
+/* Readable Korean-first identity; outlined SVG, no remote font loading. */
+header .hyram-brand-logo{display:block;width:174px!important;height:auto!important;max-width:none;object-fit:contain}
+.expert-header .hyram-brand-logo{width:200px!important}
+header a:has(>.hyram-brand-logo){display:inline-flex;align-items:center;flex-shrink:0;line-height:1}
+@media(max-width:900px){.expert-header .hyram-brand-logo{width:140px!important}}
+@media(max-width:600px){header .hyram-brand-logo{width:140px!important}}
+@media(max-width:350px){.expert-header .hyram-brand-logo{width:118px!important}}
